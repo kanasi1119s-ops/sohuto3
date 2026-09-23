@@ -50,6 +50,7 @@ npm run typecheck
 npm run lint
 npm run test:unit    # Vitest (crypto / vault / passwordGen)
 npm run test:e2e     # Playwright E2E（要: npm run build 済み、またはwebServerが自動起動）
+npm run verify:file-protocol  # dist/index.html を file:// (ダブルクリック) で開いた場合の動作確認
 ```
 
 ## データの保存場所
@@ -70,6 +71,7 @@ npm run test:e2e     # Playwright E2E（要: npm run build 済み、またはweb
 - [docs/DEBUG_LOG.md](docs/DEBUG_LOG.md) - QA3ラウンドの記録
 - [docs/THIRD_PARTY_LICENSES.md](docs/THIRD_PARTY_LICENSES.md) - 依存パッケージのOSSライセンス一覧
 - [docs/RELEASE.md](docs/RELEASE.md) - 公開手順（人間向け）
+- [docs/manual/index.html](docs/manual/index.html) - 初心者向け取扱説明書（配布ZIP同梱、file://で直接開いて読める版）
 - [docs/REPORT.md](docs/REPORT.md) - 本サイクルの日次レポート
 - [docs/legal/](docs/legal/) - 法務チェックリスト・EULA草案・免責事項
 - [docs/marketing/](docs/marketing/) - LP・SNS告知文の草稿
