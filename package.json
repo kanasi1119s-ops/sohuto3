@@ -1,0 +1,30 @@
+{
+  "name": "kinko-vault",
+  "version": "0.1.0",
+  "private": true,
+  "description": "完全ローカル完結・買い切り型の暗号化パスワード/秘密メモ保管庫 (Kinko Vault)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests --ext .ts",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "verify:file-protocol": "node scripts/verify-file-protocol.mjs",
+    "check": "npm run typecheck && npm run lint && npm run test:unit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "@types/node": "^20.14.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "fake-indexeddb": "^6.0.0",
+    "jsdom": "^25.0.0",
+    "typescript": "^5.5.4",
+    "vite": "^6.4.3",
+    "vitest": "^3.2.7"
+  }
+}

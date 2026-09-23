@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kinko Vault 取扱説明書</title>
+<style>
+  :root {
+    --bg: #f2efe7;
+    --surface: #ffffff;
+    --surface-2: #e9e3d3;
+    --ink: #23262b;
+    --ink-muted: #63666d;
+    --line: #ddd6c2;
+    --steel: #35597c;
+    --steel-dark: #24405c;
+    --steel-tint: #e4ebf1;
+    --brass: #9c6f22;
+    --brass-tint: #f3e7cf;
+    --danger: #a5372f;
+    --danger-tint: #f7e6e2;
+    --good: #386b49;
+    --good-tint: #e5efe6;
+    --radius: 14px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171b;
+      --surface: #1b1f25;
+      --surface-2: #232830;
+      --ink: #eae7df;
+      --ink-muted: #9da1a8;
+      --line: #323842;
+      --steel: #86b3e0;
+      --steel-dark: #5f90c2;
+      --steel-tint: #1e2c3a;
+      --brass: #dcae5f;
+      --brass-tint: #322817;
+      --danger: #e28b83;
+      --danger-tint: #34201f;
+      --good: #86c79a;
+      --good-tint: #1c2e22;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171b;
+    --surface: #1b1f25;
+    --surface-2: #232830;
+    --ink: #eae7df;
+    --ink-muted: #9da1a8;
+    --line: #323842;
+    --steel: #86b3e0;
+    --steel-dark: #5f90c2;
+    --steel-tint: #1e2c3a;
+    --brass: #dcae5f;
+    --brass-tint: #322817;
+    --danger: #e28b83;
+    --danger-tint: #34201f;
+    --good: #86c79a;
+    --good-tint: #1c2e22;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+    line-height: 1.85;
+    font-size: 16px;
+  }
+  h1, h2, h3, .brand {
+    font-family: "Shippori Mincho", serif;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-wrap: balance;
+  }
+  .mono {
+    font-family: "IBM Plex Mono", monospace;
+  }
+  a { color: var(--steel); }
+
+  /* ---------- Header ---------- */
+  .topbar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 20;
+    background: var(--steel-dark);
+    color: #f5f2e9;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+  }
+  .topbar .mark {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: var(--brass);
+    display: grid; place-items: center;
+    flex: none;
+    font-family: "Shippori Mincho", serif;
+    font-weight: 700;
+    color: #2a2110;
+  }
+  .topbar .brand { font-size: 19px; color: #f5f2e9; margin: 0; }
+  .topbar .sub { font-size: 12px; color: #cfd9e2; margin-top: 1px; }
+
+  /* ---------- Layout ---------- */
+  .shell {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 20px 90px;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  @media (max-width: 820px) {
+    .shell { grid-template-columns: 1fr; }
+  }
+
+  nav.toc {
+    position: sticky;
+    top: calc(70px + env(safe-area-inset-top, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13.5px;
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+  }
+  nav.toc a {
+    color: var(--ink-muted);
+    text-decoration: none;
+    padding: 5px 0;
+    border-left: 2px solid transparent;
+    margin-left: -16px;
+    padding-left: 14px;
+    transition: color .15s, border-color .15s;
+  }
+  nav.toc a.active, nav.toc a:hover {
+    color: var(--steel-dark);
+    border-left-color: var(--brass);
+    font-weight: 700;
+  }
+  @media (max-width: 820px) {
+    nav.toc {
+      position: static;
+      border: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 6px 16px;
+      background: var(--surface);
+    }
+  }
+  details.toc-mobile { display: none; }
+  @media (max-width: 820px) {
+    details.toc-mobile { display: block; margin-bottom: 8px; }
+    details.toc-mobile summary {
+      cursor: pointer;
+      font-weight: 700;
+      padding: 12px 4px;
+      list-style: none;
+    }
+    details.toc-mobile summary::-webkit-details-marker { display: none; }
+    details.toc-mobile summary::after { content: " ▾"; color: var(--brass); }
+  }
+
+  main { min-width: 0; }
+
+  .lede {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 34px;
+  }
+  .lede p { margin: 0 0 10px; color: var(--ink-muted); }
+  .lede p:last-child { margin-bottom: 0; }
+
+  section { margin-bottom: 46px; scroll-margin-top: 84px; }
+  section > h2 {
+    font-size: 23px;
+    margin: 0 0 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  section > h2 .no {
+    color: var(--brass);
+    font-size: 15px;
+    font-family: "IBM Plex Mono", monospace;
+  }
+  section > .desc { color: var(--ink-muted); margin: 0 0 18px; }
+
+  h3 { font-size: 17px; margin: 22px 0 8px; }
+
+  /* ---------- Step cards ---------- */
+  .step {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+  .step .num {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--steel);
+    color: #fff;
+    display: grid; place-items: center;
+    font-family: "Shippori Mincho", serif;
+    font-weight: 700;
+    font-size: 18px;
+    flex: none;
+  }
+  .step .body {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .step .body h4 { margin: 0 0 6px; font-size: 15.5px; }
+  .step .body p { margin: 0 0 8px; }
+  .step .body p:last-child { margin-bottom: 0; }
+  .step img {
+    display: block;
+    width: 100%;
+    max-width: 460px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    margin-top: 10px;
+  }
+  kbd, .ui {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1px 7px;
+    font-size: 0.88em;
+  }
+
+  /* ---------- Callouts ---------- */
+  .callout {
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin: 16px 0;
+    border: 1px solid var(--line);
+  }
+  .callout h4 { margin: 0 0 6px; font-size: 14px; }
+  .callout p { margin: 0; }
+  .callout.tip { background: var(--good-tint); border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
+  .callout.tip h4 { color: var(--good); }
+  .callout.warn { background: var(--danger-tint); border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); }
+  .callout.warn h4 { color: var(--danger); }
+  .callout.note { background: var(--brass-tint); border-color: color-mix(in srgb, var(--brass) 35%, var(--line)); }
+  .callout.note h4 { color: var(--brass); }
+
+  /* ---------- FAQ ---------- */
+  .faq-item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .faq-item summary {
+    padding: 14px 18px;
+    cursor: pointer;
+    font-weight: 700;
+    list-style: none;
+    display: flex;
+    gap: 10px;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::before { content: "Q"; color: var(--brass); font-family: "Shippori Mincho", serif; }
+  .faq-item[open] summary { border-bottom: 1px solid var(--line); }
+  .faq-item .a { padding: 12px 18px 16px; color: var(--ink-muted); display: flex; gap: 10px; }
+  .faq-item .a::before { content: "A"; color: var(--steel); font-family: "Shippori Mincho", serif; font-weight: 700; flex: none; }
+  .faq-item .a > div { min-width: 0; }
+  .faq-item .a ol { margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+
+  /* ---------- Glossary + table ---------- */
+  table.gloss { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  table.gloss th, table.gloss td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 14.5px; vertical-align: top; }
+  table.gloss th { background: var(--surface-2); width: 130px; font-weight: 700; }
+  table.gloss tr:last-child td, table.gloss tr:last-child th { border-bottom: none; }
+  .table-wrap { overflow-x: auto; }
+
+  .checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .checklist li {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .checklist li::before { content: "✓"; color: var(--good); font-weight: 700; }
+
+  footer {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    color: var(--ink-muted);
+    font-size: 13px;
+    text-align: center;
+  }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+
+</head>
+<body>
+<header class="topbar">
+  <div class="mark">金</div>
+  <div>
+    <p class="brand">Kinko Vault 取扱説明書</p>
+    <p class="sub">はじめての方向け・くわしい使い方ガイド</p>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="toc" id="toc">
+    <a href="#about">① これは何のソフト？</a>
+    <a href="#ready">② 使う前の準備</a>
+    <a href="#start">③ はじめての起動</a>
+    <a href="#add">④ パスワードを登録する</a>
+    <a href="#view">⑤ 見る・コピーする</a>
+    <a href="#lock">⑥ ロックと再ログイン</a>
+    <a href="#backup">⑦ バックアップを取る</a>
+    <a href="#restore">⑧ バックアップから復元</a>
+    <a href="#daily">⑨ 日常の使い方の流れ</a>
+    <a href="#trouble">⑩ 困ったときは</a>
+    <a href="#safety">⑪ 安全に使うために</a>
+    <a href="#glossary">⑫ ことば辞典</a>
+  </nav>
+
+  <main>
+    <details class="toc-mobile">
+      <summary>目次を開く</summary>
+      <nav class="toc" style="position:static;border:none;padding-left:14px;margin-top:6px;">
+        <a href="#about">① これは何のソフト？</a>
+        <a href="#ready">② 使う前の準備</a>
+        <a href="#start">③ はじめての起動</a>
+        <a href="#add">④ パスワードを登録する</a>
+        <a href="#view">⑤ 見る・コピーする</a>
+        <a href="#lock">⑥ ロックと再ログイン</a>
+        <a href="#backup">⑦ バックアップを取る</a>
+        <a href="#restore">⑧ バックアップから復元</a>
+        <a href="#daily">⑨ 日常の使い方の流れ</a>
+        <a href="#trouble">⑩ 困ったときは</a>
+        <a href="#safety">⑪ 安全に使うために</a>
+        <a href="#glossary">⑫ ことば辞典</a>
+      </nav>
+    </details>
+
+    <div class="lede">
+      <p><strong>Kinko Vault（キンコ・ヴォルト）</strong>は、パソコンやスマホの<strong>ブラウザだけで動く、鍵のかかったデジタル金庫</strong>です。銀行やお店のIDとパスワードを、この中にしまっておくことができます。</p>
+      <p>インターネットには一切つながらず、しまった情報はあなたの端末の中だけに残ります。この説明書では、専門知識がなくても迷わないように、ひとつひとつの操作を順番に説明します。</p>
+    </div>
+
+    <section id="about">
+      <h2><span class="no">01</span>これは何のソフト？</h2>
+      <p class="desc">まず、Kinko Vaultが何をしてくれるのかを、たとえ話で説明します。</p>
+
+      <p>ふだん私たちは、いろいろなサイトやアプリのために、たくさんのID・パスワードを使っています。それを覚えておくのは大変ですし、紙に書いておくのも紛失や盗み見の心配があります。</p>
+      <p>Kinko Vaultは、そうしたID・パスワードを1か所にまとめてしまっておける「デジタルの金庫」です。金庫を開けるための鍵にあたるのが、あなたが最初に決める<strong>「マスターパスワード」</strong>ひとつだけです。マスターパスワードさえ覚えておけば、あとは金庫の中にいくつでもパスワードをしまえます。</p>
+
+      <div class="callout note">
+        <h4>ふつうのパスワード管理アプリと何がちがうの？</h4>
+        <p>世の中の多くのパスワード管理サービスは、あなたの情報を会社のサーバー（クラウド）に預けます。Kinko Vaultは預けません。情報はすべて、あなたが今使っているブラウザの中だけに保存され、外部に送信されることは一切ありません。そのぶん、バックアップ（⑦章）はご自身で行っていただく必要があります。</p>
+      </div>
+    </section>
+
+    <section id="ready">
+      <h2><span class="no">02</span>使う前の準備</h2>
+      <p class="desc">特別なアプリのインストールは不要です。以下だけ確認してください。</p>
+
+      <ul class="checklist">
+        <li>パソコンまたはスマホに、Chrome・Edge・Firefox・Safariのいずれか（最新版）が入っていること</li>
+        <li>ソフトのファイル一式（<span class="ui mono">index.html</span> を含むフォルダ、またはビルド済みの <span class="ui mono">dist</span> フォルダ）が手元にあること</li>
+        <li><strong>覚えやすく、他人に推測されにくいマスターパスワード</strong>を1つ考えておくこと（8文字以上。詳しくは⑪章）</li>
+      </ul>
+
+      <div class="callout warn">
+        <h4>インターネット接続は不要です</h4>
+        <p>むしろ、このソフトは通信を一切行わない設計です。Wi-Fiがオフでも、機内モードでも問題なく動作します。</p>
+      </div>
+    </section>
+
+    <section id="start">
+      <h2><span class="no">03</span>はじめての起動</h2>
+      <p class="desc">初回だけ、金庫の「鍵（マスターパスワード）」を新しく作る作業が必要です。</p>
+
+      <div class="step">
+        <div class="num">1</div>
+        <div class="body">
+          <h4><span class="ui mono">index.html</span> をダブルクリックして開く</h4>
+          <p>配布されたフォルダの中にある <span class="ui mono">index.html</span> をブラウザで開きます（ダブルクリックするだけでOKです）。開発者向けに起動する場合は、フォルダ内で <span class="ui mono">npm run dev</span> を実行し、表示されたアドレスをブラウザで開いてください。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div class="body">
+          <h4>「Kinko Vault をはじめる」画面が表示される</h4>
+          <p>初めて開いたときは、下の画像のような画面が出ます。ここでマスターパスワードを決めます。<strong>8文字以上</strong>で、なるべく他人が推測しにくいものにしてください（コツは⑪章）。</p>
+          <p>「マスターパスワード」欄と「確認」欄の<strong>両方に同じもの</strong>を入力し、<span class="ui">保管庫を作成</span> ボタンを押します。</p>
+          <img src="img/1-setup.png" alt="Kinko Vaultをはじめる画面のスクリーンショット。マスターパスワード入力欄と確認欄、保管庫を作成ボタンが表示されている" loading="lazy">
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <h4>マスターパスワードは絶対に忘れないでください</h4>
+        <p>このソフトには「パスワードを忘れた方はこちら」のような再発行の仕組みがありません。マスターパスワードを忘れると、中のデータは誰にも（開発者にも）復元できません。安全な場所に書き留めておくことを強くおすすめします。</p>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div class="body">
+          <h4>保管庫（からっぽの金庫）が開く</h4>
+          <p>作成が終わると、何も登録されていない一覧画面が表示されます。これで準備完了です。次の章で、実際にパスワードを登録してみましょう。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="add">
+      <h2><span class="no">04</span>パスワードを登録する</h2>
+      <p class="desc">よく使うサイトのID・パスワードを、金庫の中に1件ずつ登録していきます。</p>
+
+      <div class="step">
+        <div class="num">1</div>
+        <div class="body">
+          <h4><span class="ui">+ 新規エントリ</span> ボタンを押す</h4>
+          <p>画面上部にある青いボタンです。押すと、入力フォームが開きます。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div class="body">
+          <h4>項目を入力する</h4>
+          <p>以下の5つを入力できます。<strong>「タイトル」以外は空欄でもかまいません。</strong></p>
+          <div class="table-wrap">
+            <table class="gloss">
+              <tr><th>タイトル</th><td>何のサービスか分かる名前（例：〇〇銀行、〇〇通販）</td></tr>
+              <tr><th>ユーザー名</th><td>ログインID・メールアドレスなど</td></tr>
+              <tr><th>パスワード</th><td>そのサービスのパスワード。<span class="ui">自動生成</span> ボタンを押すと、安全なパスワードを自動で作ってくれます</td></tr>
+              <tr><th>URL</th><td>サイトのアドレス（後で見返すときの目印になります）</td></tr>
+              <tr><th>メモ</th><td>秘密の質問の答えなど、自由に書けるメモ欄</td></tr>
+            </table>
+          </div>
+          <img src="img/3-new-entry-form.png" alt="新規エントリ入力フォームのスクリーンショット。タイトル、ユーザー名、パスワード欄と自動生成ボタンが表示されている" loading="lazy">
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div class="body">
+          <h4><span class="ui">保存</span> ボタンを押す</h4>
+          <p>入力が終わったら保存ボタンを押します。一覧画面に戻り、今しがた登録した項目が表示されます。パスワードの部分は「••••••••」のように伏字で表示され、他人が画面をのぞいても中身は見えません。</p>
+          <img src="img/4-entry-list.png" alt="保管庫画面に「Example Bank」というエントリが1件登録されている状態のスクリーンショット。パスワードは伏字で表示されている" loading="lazy">
+        </div>
+      </div>
+
+      <div class="callout tip">
+        <h4>自動生成パスワードのすすめ</h4>
+        <p>自分で考えるより、<span class="ui">自動生成</span> ボタンで作られたランダムなパスワードの方が、他人に推測される危険がぐっと減ります。「覚える」必要はありません。金庫に保存されるので、次に使うときはこの中から見ればよいだけです。</p>
+      </div>
+    </section>
+
+    <section id="view">
+      <h2><span class="no">05</span>登録した情報を見る・コピーする</h2>
+      <p class="desc">実際にサイトへログインするときの操作です。</p>
+
+      <div class="step">
+        <div class="num">1</div>
+        <div class="body">
+          <h4>一覧から見たい項目を探す</h4>
+          <p>件数が増えてきたら、画面上部の「検索…」欄にタイトルやユーザー名の一部を入力すると、絞り込めます。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div class="body">
+          <h4><span class="ui">表示</span> ボタンでパスワードを確認する</h4>
+          <p>伏字になっているパスワードの横にある <span class="ui">表示</span> を押すと、実際の文字列が見られます。もう一度押すと、また伏字に戻ります。</p>
+          <img src="img/5-password-revealed.png" alt="表示ボタンを押してパスワードの文字列が見えている状態のスクリーンショット" loading="lazy">
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div class="body">
+          <h4><span class="ui">コピー</span> ボタンでログイン画面に貼り付ける</h4>
+          <p><span class="ui">コピー</span> を押すとパスワードがコピーされます。ログインしたいサイトのパスワード欄に貼り付け（右クリック→貼り付け、またはCtrl/Cmd+V）てください。</p>
+          <p><strong>コピーした内容は20秒後に自動で消去されます。</strong>他のアプリにうっかり貼り付いたまま残ってしまう事故を防ぐためです。20秒を過ぎてしまったら、もう一度コピーし直してください。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="lock">
+      <h2><span class="no">06</span>ロックと再ログイン</h2>
+      <p class="desc">使い終わったら金庫を閉じましょう。</p>
+
+      <div class="step">
+        <div class="num">1</div>
+        <div class="body">
+          <h4><span class="ui">ロック</span> ボタンを押す</h4>
+          <p>画面右上の「ロック」ボタンを押すと、金庫が閉じてマスターパスワード入力画面に戻ります。中の情報は暗号化された状態で保存されているので、他の人がこのパソコンを触っても中身は見えません。</p>
+        </div>
+      </div>
+
+      <div class="callout note">
+        <h4>操作をやめて5分たつと自動でロックされます</h4>
+        <p>ロック操作を忘れてその場を離れてしまっても大丈夫なように、5分間何も操作がないと自動的にロックがかかります。</p>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div class="body">
+          <h4>次に開くときはマスターパスワードを入力する</h4>
+          <p>ブラウザを閉じてから再度開いた場合や、ロック後に再度使う場合は、最初に決めたマスターパスワードを入力すれば、また中身を見ることができます。パソコンを再起動しても、登録した情報は消えずに残っています。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="backup">
+      <h2><span class="no">07</span>バックアップを取る（エクスポート）</h2>
+      <p class="desc">とても大切な章です。必ず一度は実行してください。</p>
+
+      <div class="callout warn">
+        <h4>なぜバックアップが必要なの？</h4>
+        <p>Kinko Vaultのデータは、今開いているブラウザの中だけに保存されています。ブラウザの履歴やデータを消去したり、パソコンが壊れたりすると、バックアップがない限り情報は失われます。<strong>月に1回など、決まったタイミングで保存する習慣</strong>をおすすめします。</p>
+      </div>
+
+      <div class="step">
+        <div class="num">1</div>
+        <div class="body">
+          <h4><span class="ui">エクスポート</span> ボタンを押す</h4>
+          <p>金庫を開いた状態（ロック解除した状態）で、画面上部の「エクスポート」ボタンを押します。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div class="body">
+          <h4>ファイルがダウンロードされる</h4>
+          <p><span class="ui mono">kinko-vault-backup-数字.json</span> という名前のファイルが、パソコンのダウンロードフォルダに保存されます。このファイルの中身も暗号化されているので、そのままUSBメモリやオンラインストレージに置いても、マスターパスワードを知らない人には中身が読めません。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div class="body">
+          <h4>ファイルを安全な場所に保管する</h4>
+          <p>USBメモリ、外付けディスク、信頼できるクラウドストレージなど、パソコン本体とは別の場所に保存しておくと安心です。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="restore">
+      <h2><span class="no">08</span>バックアップから復元する（インポート）</h2>
+      <p class="desc">別のパソコンに引っ越すときや、データが消えてしまったときに使います。</p>
+
+      <div class="step">
+        <div class="num">1</div>
+        <div class="body">
+          <h4>ロック解除画面まで進む</h4>
+          <p>Kinko Vaultを開くと表示される、マスターパスワード入力画面（ロック解除画面）を開きます。画面の下の方に「バックアップから復元する場合」という案内があります。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div class="body">
+          <h4>バックアップファイルを選び、マスターパスワードを入力する</h4>
+          <p>「ファイルを選択」からバックアップした <span class="ui mono">.json</span> ファイルを選び、そのバックアップを作ったときの<strong>マスターパスワード</strong>を入力してから <span class="ui">インポート</span> を押します。</p>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <h4>今のデータは上書きされます</h4>
+        <p>インポートすると、今その端末にある金庫の中身は、バックアップファイルの内容に<strong>まるごと置き換わります</strong>（合体はしません）。すでに大事なデータが入っている端末にインポートするときは、先に一度その端末の分もエクスポートして保険を取っておくと安心です。</p>
+      </div>
+    </section>
+
+    <section id="daily">
+      <h2><span class="no">09</span>日常の使い方の流れ（まとめ）</h2>
+      <p class="desc">一度覚えてしまえば、毎日の操作はとてもシンプルです。</p>
+      <div class="table-wrap">
+        <table class="gloss">
+          <tr><th>サイトにログインしたい</th><td>Kinko Vaultを開く → マスターパスワードで解除 → 検索して探す → コピー → ログイン画面に貼り付け</td></tr>
+          <tr><th>新しいサービスに登録した</th><td>+新規エントリ → 入力 → 自動生成でパスワード作成 → 保存</td></tr>
+          <tr><th>席を離れる</th><td>ロックボタン（または放置で自動ロック）</td></tr>
+          <tr><th>月1回など、定期的に</th><td>エクスポートしてバックアップを保管</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="trouble">
+      <h2><span class="no">10</span>困ったときは（トラブルシューティング）</h2>
+
+      <details class="faq-item" open>
+        <summary>ダウンロードしたZIPを展開して index.html を開いても、真っ白い画面のまま何も表示されません（Windows / Edge・Chrome）</summary>
+        <div class="a"><div>
+          <p>Windowsには、ブラウザでダウンロードしたファイルに「インターネットから来たファイル」という印（マーク・オブ・ザ・ウェブ）を付ける仕組みがあります。この印が付いたままZIPを展開すると、中のファイルにも印が引き継がれ、Edge・Chromeがセキュリティのために内容の一部を読み込まなくなることがあります。以下の手順で解決します。</p>
+          <ol>
+            <li>ダウンロードした <span class="ui mono">KinkoVault.zip</span> を<strong>展開する前に</strong>、ファイルを右クリック →「プロパティ」を開く</li>
+            <li>画面下の方にある「セキュリティ」欄の <strong>「許可する」チェックボックス</strong>にチェックを入れ、「適用」→「OK」</li>
+            <li>この状態から<strong>あらためてZIPを展開</strong>する（すでに展開済みのフォルダがあれば、削除してからやり直してください）</li>
+            <li><span class="ui mono">app/index.html</span> を開く</li>
+          </ol>
+        </div></div>
+      </details>
+      <details class="faq-item">
+        <summary>マスターパスワードを忘れてしまいました</summary>
+        <div class="a"><p>大変申し訳ありませんが、マスターパスワードを他の手段で復元する仕組みはありません。もしバックアップファイルと、そのときのマスターパスワードの手がかりがあれば、別の端末で試してみてください。それも無い場合、中のデータへ再びアクセスする方法は残念ながらありません。</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>「マスターパスワードが違います」と表示されて開けません</summary>
+        <div class="a"><p>入力ミス（大文字・小文字、全角・半角、末尾の空白など）が最も多い原因です。落ち着いてもう一度入力し直してください。キーボードの入力モード（日本語/英数）が切り替わっていないかも確認してください。</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>コピーしたパスワードが貼り付けられません</summary>
+        <div class="a"><p>コピーしてから20秒以上経つと、自動的に消去される仕様です。もう一度「表示」→「コピー」をやり直してください。また、一部のブラウザではコピー機能に許可が必要な場合があります。</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>別のパソコン・スマホでも同じ情報を使いたい</summary>
+        <div class="a"><p>Kinko Vaultは端末間の自動同期は行いません（データを外部に送らない設計のためです）。⑦章の手順でエクスポートし、新しい端末で⑧章の手順でインポートしてください。</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>ブラウザの「閲覧履歴・データを削除」をしたらどうなりますか？</summary>
+        <div class="a"><p>設定によっては保存されているデータ（IndexedDB）も一緒に消えてしまうことがあります。ブラウザのデータ消去機能を使う前には、必ずエクスポートでバックアップを取ってください。</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>インターネットに繋がっていないと使えませんか？</summary>
+        <div class="a"><p>逆です。Kinko Vaultはインターネット接続が無い状態（機内モードなど）でも、すべての機能が問題なく使えるように作られています。</p></div>
+      </details>
+    </section>
+
+    <section id="safety">
+      <h2><span class="no">11</span>安全に使うために</h2>
+
+      <h3>良いマスターパスワードの作り方</h3>
+      <ul class="checklist">
+        <li>誕生日や名前など、他人に推測されやすい情報は避ける</li>
+        <li>8文字以上（できれば12文字以上）にする</li>
+        <li>他のサービスで使い回していないパスワードにする</li>
+        <li>覚えられる範囲で、単語をいくつかつなげた長い文にするのもおすすめです（例のような特定の文字列は使わないでください）</li>
+      </ul>
+
+      <h3>このソフトについて知っておいてほしいこと</h3>
+      <div class="callout note">
+        <p>Kinko Vaultは個人開発によるMVP（試作段階のソフト）であり、専門機関による第三者セキュリティ監査はまだ受けていません。暗号化には広く使われている標準的な方式（AES-256-GCM、PBKDF2）を採用していますが、重要な情報を保管される場合は、この点をご理解のうえ、定期的なバックアップ（⑦章）を必ず行ってください。</p>
+      </div>
+
+      <p>ライセンス条項・免責事項・プライバシー方針の詳しい内容は、配布フォルダ内の <span class="ui mono">docs/legal/</span> フォルダをご参照ください。</p>
+    </section>
+
+    <section id="glossary">
+      <h2><span class="no">12</span>ことば辞典</h2>
+      <p class="desc">説明書の中で出てくる少し難しい言葉を、やさしく言い換えています。</p>
+      <div class="table-wrap">
+        <table class="gloss">
+          <tr><th>マスターパスワード</th><td>この金庫を開け閉めするための、たったひとつの鍵となるパスワード。</td></tr>
+          <tr><th>暗号化</th><td>データを、鍵（マスターパスワード）を知っている人にしか読めない形に変換すること。金庫の中身を特殊な文字に変えてしまうイメージです。</td></tr>
+          <tr><th>エクスポート</th><td>金庫の中身を、1つのファイルとして書き出す（保存する）こと。バックアップと同じ意味です。</td></tr>
+          <tr><th>インポート</th><td>書き出しておいたファイルを、金庫に読み込ませて元に戻すこと。復元と同じ意味です。</td></tr>
+          <tr><th>ローカル完結</th><td>インターネットの向こう側（サーバー）を使わず、今使っている端末の中だけで全部の処理が終わること。</td></tr>
+          <tr><th>IndexedDB</th><td>ブラウザが持っている、データをしまっておくための引き出しのような仕組み。Kinko Vaultはここにデータを保存します。</td></tr>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  Kinko Vault 取扱説明書 ／ 本書は自動生成されたMVP段階のドキュメントです。内容は今後のアップデートで変更される場合があります。
+</footer>
+
+<script>
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+    var sections = links
+      .map(function (a) { return document.querySelector(a.getAttribute('href')); })
+      .filter(Boolean);
+
+    if (!('IntersectionObserver' in window) || sections.length === 0) return;
+
+    var byId = {};
+    links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var link = byId[entry.target.id];
+        if (!link) return;
+        if (entry.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove('active'); });
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+
+    sections.forEach(function (s) { observer.observe(s); });
+  })();
+</script>
+
+</body>
+</html>
