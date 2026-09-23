@@ -2,6 +2,17 @@
 
 ## ⚠ 実行上の問題（最上部に明記）
 
+- **【最重要】リモートへのpushが権限不足で失敗し、成果物はローカルのみです。** `git push` は
+  `Claude doesn't have GitHub access to kanasi1119s-ops/sohuto3 for your organization. An org admin can install the Claude GitHub App...`
+  という403エラーで失敗。GitHub MCPサーバー（App経由）でのブランチ作成 (`create_branch`) も
+  `403 Resource not accessible by integration` で失敗しました。いずれも権限起因のエラーであり
+  再試行しても解消しないため（運用指示書 1-7 に従い）再試行やアカウント回避策は行わず中止しました。
+  **全コミットはこのセッションのローカル作業ディレクトリ (`/home/user/sohuto3`, ブランチ
+  `claude/pensive-goldberg-0w29u6`) に残っています。人間が以下のいずれかの対応を行ったうえで、
+  次回セッションで再度pushする必要があります**: (a) 組織管理者がClaude GitHub App
+  (https://github.com/apps/claude/installations/select_target) をこのリポジトリにインストール/
+  権限付与する、または (b) claude.ai の連携設定からGitHub接続を再連携する
+  (https://claude.ai/customize/connectors?auth_start=github&auth_start_force=1)。
 - 本セッションのGitHubアクセスは **`kanasi1119s-ops/sohuto3` 1リポジトリのみ** に制限されており、運用指示書が前提とする以下の操作が**実行不可**でした：
   - `kanasi1119s-ops/orchestrator-log` への読み書き（Phase -1 の引き継ぎ確認、日次レポートの正式格納先）
   - 新規リポジトリの作成（`kanasi1119s-ops` 配下に日次でプロジェクト用リポジトリを新規作成する運用）
