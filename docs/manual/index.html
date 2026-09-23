@@ -280,6 +280,8 @@
   .faq-item[open] summary { border-bottom: 1px solid var(--line); }
   .faq-item .a { padding: 12px 18px 16px; color: var(--ink-muted); display: flex; gap: 10px; }
   .faq-item .a::before { content: "A"; color: var(--steel); font-family: "Shippori Mincho", serif; font-weight: 700; flex: none; }
+  .faq-item .a > div { min-width: 0; }
+  .faq-item .a ol { margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
 
   /* ---------- Glossary + table ---------- */
   table.gloss { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
@@ -607,6 +609,18 @@
     <section id="trouble">
       <h2><span class="no">10</span>困ったときは（トラブルシューティング）</h2>
 
+      <details class="faq-item" open>
+        <summary>ダウンロードしたZIPを展開して index.html を開いても、真っ白い画面のまま何も表示されません（Windows / Edge・Chrome）</summary>
+        <div class="a"><div>
+          <p>Windowsには、ブラウザでダウンロードしたファイルに「インターネットから来たファイル」という印（マーク・オブ・ザ・ウェブ）を付ける仕組みがあります。この印が付いたままZIPを展開すると、中のファイルにも印が引き継がれ、Edge・Chromeがセキュリティのために内容の一部を読み込まなくなることがあります。以下の手順で解決します。</p>
+          <ol>
+            <li>ダウンロードした <span class="ui mono">KinkoVault.zip</span> を<strong>展開する前に</strong>、ファイルを右クリック →「プロパティ」を開く</li>
+            <li>画面下の方にある「セキュリティ」欄の <strong>「許可する」チェックボックス</strong>にチェックを入れ、「適用」→「OK」</li>
+            <li>この状態から<strong>あらためてZIPを展開</strong>する（すでに展開済みのフォルダがあれば、削除してからやり直してください）</li>
+            <li><span class="ui mono">app/index.html</span> を開く</li>
+          </ol>
+        </div></div>
+      </details>
       <details class="faq-item">
         <summary>マスターパスワードを忘れてしまいました</summary>
         <div class="a"><p>大変申し訳ありませんが、マスターパスワードを他の手段で復元する仕組みはありません。もしバックアップファイルと、そのときのマスターパスワードの手がかりがあれば、別の端末で試してみてください。それも無い場合、中のデータへ再びアクセスする方法は残念ながらありません。</p></div>
