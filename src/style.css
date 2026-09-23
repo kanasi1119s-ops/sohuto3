@@ -1,0 +1,138 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --bg: #0f1115;
+  --card: #1a1d24;
+  --text: #e8e8ea;
+  --muted: #9aa0a6;
+  --accent: #4f8cff;
+  --danger: #ff5c5c;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+#app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 420px;
+  margin: 10vh auto;
+}
+
+input,
+textarea {
+  background: #0f1115;
+  border: 1px solid #333;
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button.secondary {
+  background: #333;
+}
+
+button.danger,
+button.icon-btn.danger {
+  background: var(--danger);
+}
+
+button.icon-btn {
+  background: #2a2e37;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.error {
+  color: var(--danger);
+  min-height: 1.2em;
+}
+
+.status {
+  color: var(--muted);
+  min-height: 1.2em;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.entry-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.entry-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.entry-main span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.secret {
+  font-family: monospace;
+  min-width: 90px;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+}
