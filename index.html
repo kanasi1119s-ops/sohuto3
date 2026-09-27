@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>テンライン - 陣取りナンバーズ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <h1>テンライン</h1>
+    <p class="subtitle">陣取りナンバーズ ─ 10本のラインを奪い合う2人用アブストラクト対戦</p>
+
+    <div class="panel controls-row">
+      <div>
+        <label for="opponent-select">対戦相手（プレイヤーB）:</label>
+        <select id="opponent-select">
+          <option value="human">人間（ホットシート対戦）</option>
+          <option value="random">AI（ランダム）</option>
+          <option value="greedy">AI（貪欲）</option>
+        </select>
+      </div>
+      <div>
+        <button id="rules-btn">ルールを見る</button>
+        <button id="new-game" class="primary">新しいゲーム</button>
+      </div>
+    </div>
+
+    <div class="panel status-bar">
+      <span id="status" class="turn-indicator"></span>
+    </div>
+
+    <div class="panel hands-area">
+      <div class="hand-label">プレイヤーB（後手）の手札</div>
+      <div class="hand" id="hand-B"></div>
+    </div>
+
+    <div class="panel">
+      <div class="board" id="board"></div>
+    </div>
+
+    <div class="panel hands-area">
+      <div class="hand-label">プレイヤーA（先手）の手札</div>
+      <div class="hand" id="hand-A"></div>
+    </div>
+
+    <div id="result" class="result-banner" style="display:none;"></div>
+    <div id="score-table-wrap"></div>
+
+    <footer>MVP版 / オフライン・ローカル対戦のみ / 個人情報は一切送信されません</footer>
+  </div>
+
+  <dialog id="rules-dialog">
+    <h2>ルール概要</h2>
+    <pre>■ コアループ
+自分の1〜8の数字タイルを4x4マスに交互に置き、盤面が埋まったら
+縦・横・斜め10本の「ライン」ごとにA/Bの合計を比べる。多数のラインを
+制した方が勝ち。
+
+■ ターン
+A→B→A→B…と交互。各プレイヤーは1〜8の数字タイルを1セットずつ持ち、
+1手で1枚を空きマスに置く。8手ずつ、合計16手で必ず盤面が埋まり終了する。
+
+■ ライン（10本）
+横4本・縦4本・斜め2本。各ラインの4マスで、A合計とB合計を比較し、
+大きい方が1ポイント（同点はどちらも0点）。
+
+■ 勝敗
+獲得ライン数が多い方が勝利。同数なら「全ラインの(自分合計-相手合計)の
+合計」が大きい方。それも同じなら行1→列4→斜め2の固定順で最初に差が
+ついたラインの優位者。全ラインが完全に同値の場合のみ後手（B）が勝利
+（先手有利を相殺する最終フォールバック）。引き分けは発生しない。
+
+■ 注意
+置いたタイルは移動・交換不可。同じ数字がA/B双方に存在するのは正常（重複ではない）。
+
+詳細は docs/rules.md を参照。</pre>
+    <button id="close-rules">閉じる</button>
+  </dialog>
+
+  <script src="game.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>

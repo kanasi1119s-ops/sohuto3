@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: ロジックユニットテスト
+        run: node test/logic.test.js
+      - name: バランスシミュレーション（回帰チェック）
+        run: node scripts/simulate.js 500
