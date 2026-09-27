@@ -1,0 +1,13 @@
+{
+  "name": "nine-territory",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ナインテリトリー - 数字タイルで陣地を奪い合う2人用ブラウザボードゲーム（MVP）",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "verify-config": "node scripts/verify-config.js",
+    "build": "node scripts/verify-config.js && node scripts/build-play.js",
+    "sim": "node sim/simulate.js",
+    "start": "npx http-server -p 8080 -c-1 ."
+  }
+}

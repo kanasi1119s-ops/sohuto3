@@ -1,0 +1,18 @@
+{
+  "title": "ナインテリトリー",
+  "boardSize": 5,
+  "handValues": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "players": ["A", "B"],
+  "captureRule": "隣接(上下左右)する敵タイルのうち、置いたタイルより数字が厳密に小さいものを捕獲する",
+  "pieRule": {
+    "enabled": true,
+    "description": "Aの1手目の直後に限り、Bはその1手目を自分のものとして奪う『スワップ』を選べる"
+  },
+  "endCondition": "両者の手札(9枚ずつ)を使い切った時点(合計18手)で終了",
+  "scoring": {
+    "primary": "盤上の所有マス数が多い方が勝ち",
+    "tiebreak": "所有タイルの数字合計が大きい方が勝ち",
+    "final": "draw"
+  },
+  "notes": "この設定値は src/core.js のロジックと一致している必要がある。scripts/verify-config.js が一致を自動チェックする。"
+}

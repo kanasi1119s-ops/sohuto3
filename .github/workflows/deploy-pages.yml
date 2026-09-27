@@ -1,0 +1,61 @@
+name: Build and Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# 同時デプロイを防ぐ
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify data/config consistency
+        run: node scripts/verify-config.js
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Build (generate single-file play/index.html)
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # 人間が Settings > Pages を「GitHub Actions」に設定し、かつ
+    # リポジトリ変数 ENABLE_PAGES_DEPLOY を true にするまでは
+    # このジョブはスキップされる（失敗にはならない）。
+    # Pagesの有効化そのもの（actions/configure-pages の enablement:true 等）は
+    # 絶対に自動化しない。
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.ENABLE_PAGES_DEPLOY == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

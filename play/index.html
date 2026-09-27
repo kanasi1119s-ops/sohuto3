@@ -1,0 +1,720 @@
+<!-- このファイルは scripts/build-play.js による自動生成物です。手で編集しないでください。 -->
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>ナインテリトリー - 数字の陣取りゲーム</title>
+<meta name="description" content="5x5の盤に1〜9の数字タイルを置き合い、隣の弱いタイルを奪い合う2人用の数字陣取りゲーム。">
+<style>
+  :root {
+    --color-a: #2563eb;
+    --color-a-bg: #dbeafe;
+    --color-b: #dc2626;
+    --color-b-bg: #fee2e2;
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #334155;
+    --text: #f1f5f9;
+    --text-dim: #94a3b8;
+    --border: #475569;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Hiragino Sans", "Yu Gothic", system-ui, -apple-system, sans-serif;
+  }
+  body { padding: 12px; }
+  h1 { font-size: 1.3rem; margin: 4px 0 12px; text-align: center; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  .topbar {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  button {
+    font-family: inherit; cursor: pointer;
+    border-radius: 8px; border: 1px solid var(--border);
+    background: var(--panel-2); color: var(--text);
+    padding: 8px 12px; font-size: 0.9rem;
+  }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  select {
+    font-family: inherit; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--panel-2); color: var(--text); padding: 8px; font-size: 0.9rem;
+  }
+  .panel {
+    background: var(--panel); border-radius: 12px; padding: 12px; margin-bottom: 12px;
+  }
+  .status-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; flex-wrap: wrap; gap: 6px;
+  }
+  #turn-label { font-weight: bold; font-size: 1.05rem; }
+  .scores { display: flex; gap: 14px; font-size: 0.85rem; color: var(--text-dim); }
+  .scores span.p-a { color: var(--color-a); font-weight: bold; }
+  .scores span.p-b { color: var(--color-b); font-weight: bold; }
+
+  #board {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+    max-width: 420px; margin: 0 auto;
+  }
+  .cell {
+    aspect-ratio: 1 / 1; width: 100%;
+    background: #0b1220; border: 2px solid var(--border);
+    border-radius: 8px; font-size: 1.3rem; font-weight: bold;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+  }
+  .cell.empty { background: #0b1220; }
+  .cell.placeable { border-color: #22c55e; }
+  .cell.p-a { background: var(--color-a-bg); color: var(--color-a); border-color: var(--color-a); }
+  .cell.p-b { background: var(--color-b-bg); color: var(--color-b); border-color: var(--color-b); }
+
+  .hands { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+  .hand-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .hand-row .name { width: 92px; font-size: 0.8rem; color: var(--text-dim); flex-shrink: 0; }
+  .tile {
+    width: 38px; height: 38px; border-radius: 8px; font-weight: bold; font-size: 1rem;
+    padding: 0; display: flex; align-items: center; justify-content: center;
+  }
+  .tile.p-a { background: var(--color-a-bg); color: var(--color-a); border-color: var(--color-a); }
+  .tile.p-b { background: var(--color-b-bg); color: var(--color-b); border-color: var(--color-b); }
+  .tile.selected { outline: 3px solid #22c55e; }
+
+  #move-log {
+    max-height: 110px; overflow-y: auto; font-size: 0.75rem; color: var(--text-dim);
+    background: #0b1220; border-radius: 8px; padding: 6px 10px; margin-top: 10px;
+  }
+  #move-log div { padding: 1px 0; }
+
+  .modal {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    align-items: center; justify-content: center; padding: 16px; z-index: 10;
+  }
+  .modal.open { display: flex; }
+  .modal-inner {
+    background: var(--panel); border-radius: 12px; padding: 18px;
+    max-width: 560px; max-height: 85vh; overflow-y: auto;
+  }
+  .modal-inner h2 { margin-top: 0; }
+  .modal-inner h3 { color: #93c5fd; margin-bottom: 4px; }
+  .modal-inner p, .modal-inner li { font-size: 0.9rem; line-height: 1.6; }
+
+  #result-panel {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    align-items: center; justify-content: center; z-index: 20;
+  }
+  #result-panel.open { display: flex; }
+  .result-box {
+    background: var(--panel); padding: 24px; border-radius: 14px; text-align: center;
+    max-width: 320px;
+  }
+  .result-box p { font-size: 1.1rem; margin-bottom: 16px; }
+
+  footer { text-align: center; font-size: 0.75rem; color: var(--text-dim); margin-top: 16px; }
+  footer a { color: #93c5fd; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ナインテリトリー</h1>
+
+  <div class="topbar">
+    <select id="mode-select">
+      <option value="pvp">人間 vs 人間</option>
+      <option value="pve">人間(青) vs AI(赤)</option>
+    </select>
+    <select id="ai-level-select">
+      <option value="greedy">AIの強さ: ふつう</option>
+      <option value="random">AIの強さ: ランダム</option>
+    </select>
+    <button id="rules-btn" type="button">ルールを見る</button>
+    <button id="reset-btn" type="button">最初から</button>
+  </div>
+
+  <div class="panel">
+    <div class="status-row">
+      <div id="turn-label">-</div>
+      <div class="scores">
+        <span class="p-a">青: <span id="score-a">-</span></span>
+        <span class="p-b">赤: <span id="score-b">-</span></span>
+      </div>
+    </div>
+    <div id="board"></div>
+
+    <div class="hands">
+      <div class="hand-row">
+        <div class="name p-a" style="color:var(--color-a)">青(先手)の手札</div>
+        <div id="hand-a" class="hand-row"></div>
+      </div>
+      <div class="hand-row">
+        <div class="name" style="color:var(--color-b)">赤(後手)の手札</div>
+        <div id="hand-b" class="hand-row"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:10px;">
+      <button id="swap-btn" type="button">スワップ（赤の1手目だけ）</button>
+    </div>
+
+    <div id="move-log"></div>
+  </div>
+
+  <footer>
+    これは単一ファイル版です。詳しいルール全文はリポジトリの docs/rules.md をご覧ください。
+  </footer>
+</div>
+
+<div class="modal" id="rules-modal">
+  <div class="modal-inner">
+    <h2>ナインテリトリー ルール（かんたん版）</h2>
+    <h3>コンセプト</h3>
+    <p>5×5の盤に1〜9の数字タイルを交互に置き合い、隣り合う数字が小さい相手のタイルを奪います。両者が9枚ずつ（合計18手）タイルを置き終えたら終了。盤の上のマス数が多い方が勝ちです（同数ならタイルの数字合計で判定）。</p>
+    <h3>手番でできること</h3>
+    <p>手札から好きな数字を1枚選び、盤の空マスならどこでも置けます。置いた直後、上下左右に隣接する相手のタイルのうち、自分が今置いた数字より「小さい」ものはすべて自分の色に変わります（数字はそのまま）。同じ数字や、より大きい数字は奪えません。</p>
+    <h3>特別ルール：スワップ</h3>
+    <p>青(先手)の1手目の直後だけ、赤(後手)はその1手目のタイルを自分のものとして奪う「スワップ」を選べます。先手が初手で強すぎる手を打つのを防ぐための仕組みです。</p>
+    <h3>終了と勝敗</h3>
+    <p>両者が手札をすべて使い切ったら終了（必ず18手で終わり、7マスは空きのまま残ります）。盤上の自分の色のマス数が多い方の勝ち。同数の場合は所有タイルの数字合計が大きい方の勝ち。それも同じなら引き分けです。</p>
+    <p>詳しいプレイ例やFAQは <a href="docs/rules.md">docs/rules.md</a>（GitHub上でも読めます）をご覧ください。</p>
+    <div style="text-align:right; margin-top:12px;">
+      <button id="rules-close" type="button">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div id="result-panel">
+  <div class="result-box">
+    <p id="result-text">-</p>
+    <button id="play-again-btn" type="button">もう一度遊ぶ</button>
+  </div>
+</div>
+
+<script>
+/**
+ * ナインテリトリー (Nine Territory) - コアゲームロジック
+ * UI/フレームワークに依存しない純粋関数群。ブラウザの <script> タグ経由でも
+ * Node.js の require() 経由でも同じコードが動くように UMD 形式で公開する。
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) {
+    module.exports = factory();
+  } else {
+    root.NineTerritory = factory();
+  }
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  var BOARD_SIZE = 5;
+  var HAND_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  var PLAYERS = ['A', 'B'];
+
+  // --- 乱数（シード指定可能。バグ再現・シミュレーション用） ---
+  function mulberry32(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a |= 0;
+      a = (a + 0x6d2b79f5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function createInitialState(seed) {
+    var board = [];
+    for (var r = 0; r < BOARD_SIZE; r++) {
+      var row = [];
+      for (var c = 0; c < BOARD_SIZE; c++) {
+        row.push(null); // null = 空マス。それ以外は {owner: 'A'|'B', value: 1-9}
+      }
+      board.push(row);
+    }
+    return {
+      board: board,
+      hands: { A: HAND_VALUES.slice(), B: HAND_VALUES.slice() },
+      turn: 'A', // 先手A・後手Bの交互手番
+      turnCount: 0,
+      seed: seed == null ? 1 : seed,
+      log: []
+    };
+  }
+
+  function cloneState(state) {
+    return {
+      board: state.board.map(function (row) {
+        return row.map(function (cell) {
+          return cell ? { owner: cell.owner, value: cell.value } : null;
+        });
+      }),
+      hands: { A: state.hands.A.slice(), B: state.hands.B.slice() },
+      turn: state.turn,
+      turnCount: state.turnCount,
+      seed: state.seed,
+      log: state.log.slice()
+    };
+  }
+
+  function otherPlayer(p) {
+    return p === 'A' ? 'B' : 'A';
+  }
+
+  function isGameOver(state) {
+    return state.hands.A.length === 0 && state.hands.B.length === 0;
+  }
+
+  // パイルール（スワップ）: 先手Aの初手が強すぎる場合、後手Bはその1手目を
+  // 「自分が置いたもの」として奪うことができる。これにより先手は初手を
+  // 強くしすぎると奪われ、弱くしすぎても意味がないという緊張が生まれ、
+  // 先手有利を自然に緩和する（Hexなどで使われる標準的な手法）。
+  function canSwap(state) {
+    return state.turnCount === 1 && state.turn === 'B';
+  }
+
+  // 現在の手番プレイヤーが選べる合法手の一覧（タイル×空マスの全組み合わせ）。
+  // Bの2手目（turnCount===1）に限り、スワップという特別な手も選択できる。
+  function getLegalMoves(state) {
+    if (isGameOver(state)) return [];
+    var moves = [];
+    var hand = state.hands[state.turn];
+    for (var r = 0; r < BOARD_SIZE; r++) {
+      for (var c = 0; c < BOARD_SIZE; c++) {
+        if (state.board[r][c] === null) {
+          for (var i = 0; i < hand.length; i++) {
+            moves.push({ type: 'place', tileValue: hand[i], row: r, col: c });
+          }
+        }
+      }
+    }
+    if (canSwap(state)) {
+      moves.push({ type: 'swap' });
+    }
+    return moves;
+  }
+
+  function neighbors(r, c) {
+    return [
+      [r - 1, c],
+      [r + 1, c],
+      [r, c - 1],
+      [r, c + 1]
+    ].filter(function (rc) {
+      return rc[0] >= 0 && rc[0] < BOARD_SIZE && rc[1] >= 0 && rc[1] < BOARD_SIZE;
+    });
+  }
+
+  /**
+   * 手を適用し、新しい状態を返す（不変データ・破壊的変更なし）。
+   * 置いたタイルの数字より「厳密に小さい」数字を持つ隣接する敵タイルは
+   * 自分の色に反転（オーナーのみ変更、数字は維持）される。連鎖はしない。
+   */
+  function applyMove(state, move) {
+    if (move && move.type === 'swap') {
+      if (!canSwap(state)) {
+        throw new Error('今はスワップできません');
+      }
+      var swapNext = cloneState(state);
+      // 直前（Aの1手目）に置かれたマスを探す
+      var lastLog = swapNext.log[swapNext.log.length - 1];
+      var target = swapNext.board[lastLog.row][lastLog.col];
+      target.owner = 'B';
+      var bHandIdx = swapNext.hands.B.indexOf(target.value);
+      swapNext.hands.B.splice(bHandIdx, 1);
+      swapNext.log.push({ player: 'B', swap: true, row: lastLog.row, col: lastLog.col, tileValue: target.value, captured: [] });
+      swapNext.turnCount += 1;
+      swapNext.turn = 'A';
+      return swapNext;
+    }
+
+    var legal = getLegalMoves(state);
+    var ok = legal.some(function (m) {
+      return m.type === 'place' && m.tileValue === move.tileValue && m.row === move.row && m.col === move.col;
+    });
+    if (!ok) {
+      throw new Error('不正な手です: ' + JSON.stringify(move));
+    }
+    var next = cloneState(state);
+    var player = next.turn;
+    var opponent = otherPlayer(player);
+
+    // 手札からタイルを除去
+    var handIdx = next.hands[player].indexOf(move.tileValue);
+    next.hands[player].splice(handIdx, 1);
+
+    // 配置
+    next.board[move.row][move.col] = { owner: player, value: move.tileValue };
+
+    // 捕獲判定
+    var captured = [];
+    neighbors(move.row, move.col).forEach(function (rc) {
+      var cell = next.board[rc[0]][rc[1]];
+      if (cell && cell.owner === opponent && cell.value < move.tileValue) {
+        cell.owner = player;
+        captured.push({ row: rc[0], col: rc[1], value: cell.value });
+      }
+    });
+
+    next.log.push({
+      player: player,
+      tileValue: move.tileValue,
+      row: move.row,
+      col: move.col,
+      captured: captured
+    });
+
+    next.turnCount += 1;
+    next.turn = opponent;
+    return next;
+  }
+
+  function getScore(state) {
+    var result = {
+      A: { cells: 0, sum: 0 },
+      B: { cells: 0, sum: 0 }
+    };
+    for (var r = 0; r < BOARD_SIZE; r++) {
+      for (var c = 0; c < BOARD_SIZE; c++) {
+        var cell = state.board[r][c];
+        if (cell) {
+          result[cell.owner].cells += 1;
+          result[cell.owner].sum += cell.value;
+        }
+      }
+    }
+    var winner = null;
+    if (result.A.cells !== result.B.cells) {
+      winner = result.A.cells > result.B.cells ? 'A' : 'B';
+    } else if (result.A.sum !== result.B.sum) {
+      winner = result.A.sum > result.B.sum ? 'A' : 'B';
+    } else {
+      winner = 'draw';
+    }
+    return { A: result.A, B: result.B, winner: winner };
+  }
+
+  function centerBonus(r, c) {
+    var mid = (BOARD_SIZE - 1) / 2;
+    var dist = Math.abs(r - mid) + Math.abs(c - mid);
+    return (4 - dist); // 中央ほど高い
+  }
+
+  // スワップした場合、相手の1手目を自分のものとして得られる価値を概算する
+  function evaluateSwap(state) {
+    var lastLog = state.log[state.log.length - 1];
+    return centerBonus(lastLog.row, lastLog.col) * 0.5 + lastLog.tileValue * 0.6;
+  }
+
+  function evaluateMove(state, move) {
+    var player = state.turn;
+    var opponent = otherPlayer(player);
+    var score = 0;
+    neighbors(move.row, move.col).forEach(function (rc) {
+      var cell = state.board[rc[0]][rc[1]];
+      if (cell && cell.owner === opponent && cell.value < move.tileValue) {
+        score += 10 + cell.value * 3; // 捕獲は高評価。捕るタイルの価値が高いほど良い
+      }
+      if (cell && cell.owner === player) {
+        score += 1; // 自陣を隣接させて塊を作る
+      }
+    });
+    // 自分より高い数字の敵タイルに隣接して置くと将来捕られやすいので減点
+    neighbors(move.row, move.col).forEach(function (rc) {
+      var cell = state.board[rc[0]][rc[1]];
+      if (cell && cell.owner === opponent && cell.value > move.tileValue) {
+        score -= 4;
+      }
+    });
+    score += centerBonus(move.row, move.col) * 0.5;
+    score -= move.tileValue * 0.15; // 高いタイルは温存気味に
+    return score;
+  }
+
+  function chooseMoveRandom(state, rng) {
+    var moves = getLegalMoves(state);
+    if (moves.length === 0) return null;
+    var idx = Math.floor(rng() * moves.length);
+    return moves[idx];
+  }
+
+  function chooseMoveGreedy(state, rng) {
+    var moves = getLegalMoves(state);
+    if (moves.length === 0) return null;
+    var bestScore = -Infinity;
+    var candidates = [];
+    moves.forEach(function (m) {
+      var s = m.type === 'swap' ? evaluateSwap(state) : evaluateMove(state, m);
+      if (s > bestScore) {
+        bestScore = s;
+        candidates = [m];
+      } else if (s === bestScore) {
+        candidates.push(m);
+      }
+    });
+    var idx = Math.floor(rng() * candidates.length);
+    return candidates[idx];
+  }
+
+  function playAutoGame(seedA, aiA, aiB) {
+    var rng = mulberry32(seedA);
+    var state = createInitialState(seedA);
+    var chooser = { A: aiA, B: aiB };
+    var guard = 0;
+    while (!isGameOver(state) && guard < 100) {
+      var move = chooser[state.turn](state, rng);
+      if (!move) break;
+      state = applyMove(state, move);
+      guard += 1;
+    }
+    return state;
+  }
+
+  return {
+    BOARD_SIZE: BOARD_SIZE,
+    HAND_VALUES: HAND_VALUES,
+    PLAYERS: PLAYERS,
+    mulberry32: mulberry32,
+    createInitialState: createInitialState,
+    cloneState: cloneState,
+    otherPlayer: otherPlayer,
+    isGameOver: isGameOver,
+    getLegalMoves: getLegalMoves,
+    canSwap: canSwap,
+    applyMove: applyMove,
+    getScore: getScore,
+    evaluateMove: evaluateMove,
+    evaluateSwap: evaluateSwap,
+    chooseMoveRandom: chooseMoveRandom,
+    chooseMoveGreedy: chooseMoveGreedy,
+    playAutoGame: playAutoGame
+  };
+});
+
+</script>
+<script>
+/**
+ * ナインテリトリー - 画面描画とイベント処理（DOM操作のみ。ゲームロジックは
+ * src/core.js の NineTerritory に委譲する）。
+ */
+(function () {
+  'use strict';
+  var G = window.NineTerritory;
+
+  var COLOR_NAME = { A: '青（先手）', B: '赤（後手）' };
+  var COLOR_CLASS = { A: 'p-a', B: 'p-b' };
+
+  var state = null;
+  var rng = null;
+  var selectedTile = null;
+  var mode = 'pvp'; // 'pvp' = 人間 vs 人間, 'pve' = 人間 vs AI
+  var aiLevel = 'greedy';
+  var aiSide = 'B';
+
+  var el = {};
+
+  function qs(id) {
+    return document.getElementById(id);
+  }
+
+  function init() {
+    el.board = qs('board');
+    el.handA = qs('hand-a');
+    el.handB = qs('hand-b');
+    el.turnLabel = qs('turn-label');
+    el.scoreA = qs('score-a');
+    el.scoreB = qs('score-b');
+    el.swapBtn = qs('swap-btn');
+    el.resetBtn = qs('reset-btn');
+    el.rulesBtn = qs('rules-btn');
+    el.rulesModal = qs('rules-modal');
+    el.rulesClose = qs('rules-close');
+    el.resultPanel = qs('result-panel');
+    el.resultText = qs('result-text');
+    el.playAgainBtn = qs('play-again-btn');
+    el.modeSelect = qs('mode-select');
+    el.aiLevelSelect = qs('ai-level-select');
+    el.log = qs('move-log');
+
+    el.resetBtn.addEventListener('click', startNewGame);
+    el.playAgainBtn.addEventListener('click', startNewGame);
+    el.rulesBtn.addEventListener('click', function () {
+      el.rulesModal.classList.add('open');
+    });
+    el.rulesClose.addEventListener('click', function () {
+      el.rulesModal.classList.remove('open');
+    });
+    el.swapBtn.addEventListener('click', doSwap);
+    el.modeSelect.addEventListener('change', function () {
+      mode = el.modeSelect.value;
+      startNewGame();
+    });
+    el.aiLevelSelect.addEventListener('change', function () {
+      aiLevel = el.aiLevelSelect.value;
+      startNewGame();
+    });
+
+    startNewGame();
+  }
+
+  function startNewGame() {
+    var seed = Date.now() % 1000000;
+    state = G.createInitialState(seed);
+    rng = G.mulberry32(seed + 1);
+    selectedTile = null;
+    el.resultPanel.classList.remove('open');
+    el.log.innerHTML = '';
+    render();
+    maybeRunAiTurn();
+  }
+
+  function currentAiThinks() {
+    return mode === 'pve' && state.turn === aiSide && !G.isGameOver(state);
+  }
+
+  function maybeRunAiTurn() {
+    if (!currentAiThinks()) return;
+    setTimeout(function () {
+      var chooser = aiLevel === 'random' ? G.chooseMoveRandom : G.chooseMoveGreedy;
+      var move = chooser(state, rng);
+      if (move) {
+        applyLoggedMove(move);
+      }
+      render();
+      maybeRunAiTurn();
+    }, 350);
+  }
+
+  function applyLoggedMove(move) {
+    var player = state.turn;
+    state = G.applyMove(state, move);
+    var entry = state.log[state.log.length - 1];
+    var line = document.createElement('div');
+    if (entry.swap) {
+      line.textContent = COLOR_NAME[player] + ': スワップ！(' + (entry.row + 1) + ',' + (entry.col + 1) + ')のタイルを奪った';
+    } else {
+      var capTxt = entry.captured.length
+        ? '（' + entry.captured.map(function (c) { return c.value; }).join(',') + ' を捕獲）'
+        : '';
+      line.textContent = COLOR_NAME[player] + ': ' + entry.tileValue + ' を (' + (entry.row + 1) + ',' + (entry.col + 1) + ') に配置 ' + capTxt;
+    }
+    el.log.appendChild(line);
+    el.log.scrollTop = el.log.scrollHeight;
+  }
+
+  function onCellClick(r, c) {
+    if (G.isGameOver(state)) return;
+    if (currentAiThinks()) return;
+    if (state.board[r][c] !== null) return;
+    if (selectedTile === null) return;
+    var move = { type: 'place', tileValue: selectedTile, row: r, col: c };
+    var legal = G.getLegalMoves(state).some(function (m) {
+      return m.type === 'place' && m.tileValue === move.tileValue && m.row === r && m.col === c;
+    });
+    if (!legal) return;
+    applyLoggedMove(move);
+    selectedTile = null;
+    render();
+    maybeRunAiTurn();
+  }
+
+  function onTileClick(player, value) {
+    if (G.isGameOver(state)) return;
+    if (currentAiThinks()) return;
+    if (state.turn !== player) return;
+    selectedTile = selectedTile === value ? null : value;
+    render();
+  }
+
+  function doSwap() {
+    if (!G.canSwap(state)) return;
+    if (currentAiThinks()) return;
+    applyLoggedMove({ type: 'swap' });
+    render();
+    maybeRunAiTurn();
+  }
+
+  function render() {
+    renderBoard();
+    renderHand('A', el.handA);
+    renderHand('B', el.handB);
+    renderStatus();
+  }
+
+  function renderBoard() {
+    el.board.innerHTML = '';
+    for (var r = 0; r < G.BOARD_SIZE; r++) {
+      for (var c = 0; c < G.BOARD_SIZE; c++) {
+        (function (r, c) {
+          var cell = state.board[r][c];
+          var div = document.createElement('button');
+          div.className = 'cell' + (cell ? ' ' + COLOR_CLASS[cell.owner] : ' empty');
+          div.type = 'button';
+          div.setAttribute('aria-label', (r + 1) + '行' + (c + 1) + '列');
+          if (cell) {
+            div.textContent = cell.value;
+          } else if (selectedTile !== null) {
+            div.classList.add('placeable');
+          }
+          div.addEventListener('click', function () {
+            onCellClick(r, c);
+          });
+          el.board.appendChild(div);
+        })(r, c);
+      }
+    }
+  }
+
+  function renderHand(player, container) {
+    container.innerHTML = '';
+    state.hands[player].forEach(function (value) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tile ' + COLOR_CLASS[player];
+      btn.textContent = value;
+      if (selectedTile === value && state.turn === player) {
+        btn.classList.add('selected');
+      }
+      var disabled = state.turn !== player || G.isGameOver(state) || currentAiThinks();
+      btn.disabled = disabled;
+      btn.addEventListener('click', function () {
+        onTileClick(player, value);
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  function renderStatus() {
+    var score = G.getScore(state);
+    el.scoreA.textContent = score.A.cells + 'マス（合計値' + score.A.sum + '）';
+    el.scoreB.textContent = score.B.cells + 'マス（合計値' + score.B.sum + '）';
+
+    var over = G.isGameOver(state);
+    if (over) {
+      el.turnLabel.textContent = 'ゲーム終了';
+      el.swapBtn.disabled = true;
+      var msg;
+      if (score.winner === 'draw') {
+        msg = '引き分けです！';
+      } else {
+        msg = COLOR_NAME[score.winner] + ' の勝ちです！';
+      }
+      el.resultText.textContent = msg + '（青: ' + score.A.cells + 'マス / 赤: ' + score.B.cells + 'マス）';
+      el.resultPanel.classList.add('open');
+    } else {
+      var thinking = currentAiThinks();
+      el.turnLabel.textContent = (thinking ? 'AI(' + COLOR_NAME[state.turn] + ')が考え中…' : COLOR_NAME[state.turn] + ' の番です');
+      el.swapBtn.disabled = !(G.canSwap(state) && !thinking);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
+</script>
+</body>
+</html>

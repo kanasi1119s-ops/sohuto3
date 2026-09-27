@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>ナインテリトリー - 数字の陣取りゲーム</title>
+<meta name="description" content="5x5の盤に1〜9の数字タイルを置き合い、隣の弱いタイルを奪い合う2人用の数字陣取りゲーム。">
+<style>
+  :root {
+    --color-a: #2563eb;
+    --color-a-bg: #dbeafe;
+    --color-b: #dc2626;
+    --color-b-bg: #fee2e2;
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #334155;
+    --text: #f1f5f9;
+    --text-dim: #94a3b8;
+    --border: #475569;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Hiragino Sans", "Yu Gothic", system-ui, -apple-system, sans-serif;
+  }
+  body { padding: 12px; }
+  h1 { font-size: 1.3rem; margin: 4px 0 12px; text-align: center; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  .topbar {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  button {
+    font-family: inherit; cursor: pointer;
+    border-radius: 8px; border: 1px solid var(--border);
+    background: var(--panel-2); color: var(--text);
+    padding: 8px 12px; font-size: 0.9rem;
+  }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  select {
+    font-family: inherit; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--panel-2); color: var(--text); padding: 8px; font-size: 0.9rem;
+  }
+  .panel {
+    background: var(--panel); border-radius: 12px; padding: 12px; margin-bottom: 12px;
+  }
+  .status-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; flex-wrap: wrap; gap: 6px;
+  }
+  #turn-label { font-weight: bold; font-size: 1.05rem; }
+  .scores { display: flex; gap: 14px; font-size: 0.85rem; color: var(--text-dim); }
+  .scores span.p-a { color: var(--color-a); font-weight: bold; }
+  .scores span.p-b { color: var(--color-b); font-weight: bold; }
+
+  #board {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+    max-width: 420px; margin: 0 auto;
+  }
+  .cell {
+    aspect-ratio: 1 / 1; width: 100%;
+    background: #0b1220; border: 2px solid var(--border);
+    border-radius: 8px; font-size: 1.3rem; font-weight: bold;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+  }
+  .cell.empty { background: #0b1220; }
+  .cell.placeable { border-color: #22c55e; }
+  .cell.p-a { background: var(--color-a-bg); color: var(--color-a); border-color: var(--color-a); }
+  .cell.p-b { background: var(--color-b-bg); color: var(--color-b); border-color: var(--color-b); }
+
+  .hands { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+  .hand-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .hand-row .name { width: 92px; font-size: 0.8rem; color: var(--text-dim); flex-shrink: 0; }
+  .tile {
+    width: 38px; height: 38px; border-radius: 8px; font-weight: bold; font-size: 1rem;
+    padding: 0; display: flex; align-items: center; justify-content: center;
+  }
+  .tile.p-a { background: var(--color-a-bg); color: var(--color-a); border-color: var(--color-a); }
+  .tile.p-b { background: var(--color-b-bg); color: var(--color-b); border-color: var(--color-b); }
+  .tile.selected { outline: 3px solid #22c55e; }
+
+  #move-log {
+    max-height: 110px; overflow-y: auto; font-size: 0.75rem; color: var(--text-dim);
+    background: #0b1220; border-radius: 8px; padding: 6px 10px; margin-top: 10px;
+  }
+  #move-log div { padding: 1px 0; }
+
+  .modal {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    align-items: center; justify-content: center; padding: 16px; z-index: 10;
+  }
+  .modal.open { display: flex; }
+  .modal-inner {
+    background: var(--panel); border-radius: 12px; padding: 18px;
+    max-width: 560px; max-height: 85vh; overflow-y: auto;
+  }
+  .modal-inner h2 { margin-top: 0; }
+  .modal-inner h3 { color: #93c5fd; margin-bottom: 4px; }
+  .modal-inner p, .modal-inner li { font-size: 0.9rem; line-height: 1.6; }
+
+  #result-panel {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    align-items: center; justify-content: center; z-index: 20;
+  }
+  #result-panel.open { display: flex; }
+  .result-box {
+    background: var(--panel); padding: 24px; border-radius: 14px; text-align: center;
+    max-width: 320px;
+  }
+  .result-box p { font-size: 1.1rem; margin-bottom: 16px; }
+
+  footer { text-align: center; font-size: 0.75rem; color: var(--text-dim); margin-top: 16px; }
+  footer a { color: #93c5fd; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ナインテリトリー</h1>
+
+  <div class="topbar">
+    <select id="mode-select">
+      <option value="pvp">人間 vs 人間</option>
+      <option value="pve">人間(青) vs AI(赤)</option>
+    </select>
+    <select id="ai-level-select">
+      <option value="greedy">AIの強さ: ふつう</option>
+      <option value="random">AIの強さ: ランダム</option>
+    </select>
+    <button id="rules-btn" type="button">ルールを見る</button>
+    <button id="reset-btn" type="button">最初から</button>
+  </div>
+
+  <div class="panel">
+    <div class="status-row">
+      <div id="turn-label">-</div>
+      <div class="scores">
+        <span class="p-a">青: <span id="score-a">-</span></span>
+        <span class="p-b">赤: <span id="score-b">-</span></span>
+      </div>
+    </div>
+    <div id="board"></div>
+
+    <div class="hands">
+      <div class="hand-row">
+        <div class="name p-a" style="color:var(--color-a)">青(先手)の手札</div>
+        <div id="hand-a" class="hand-row"></div>
+      </div>
+      <div class="hand-row">
+        <div class="name" style="color:var(--color-b)">赤(後手)の手札</div>
+        <div id="hand-b" class="hand-row"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:10px;">
+      <button id="swap-btn" type="button">スワップ（赤の1手目だけ）</button>
+    </div>
+
+    <div id="move-log"></div>
+  </div>
+
+  <footer>
+    ルールブック全文: <a href="docs/rules.md">docs/rules.md</a> ／
+    <a href="play/index.html">単一ファイル版(オフライン用)</a>
+  </footer>
+</div>
+
+<div class="modal" id="rules-modal">
+  <div class="modal-inner">
+    <h2>ナインテリトリー ルール（かんたん版）</h2>
+    <h3>コンセプト</h3>
+    <p>5×5の盤に1〜9の数字タイルを交互に置き合い、隣り合う数字が小さい相手のタイルを奪います。両者が9枚ずつ（合計18手）タイルを置き終えたら終了。盤の上のマス数が多い方が勝ちです（同数ならタイルの数字合計で判定）。</p>
+    <h3>手番でできること</h3>
+    <p>手札から好きな数字を1枚選び、盤の空マスならどこでも置けます。置いた直後、上下左右に隣接する相手のタイルのうち、自分が今置いた数字より「小さい」ものはすべて自分の色に変わります（数字はそのまま）。同じ数字や、より大きい数字は奪えません。</p>
+    <h3>特別ルール：スワップ</h3>
+    <p>青(先手)の1手目の直後だけ、赤(後手)はその1手目のタイルを自分のものとして奪う「スワップ」を選べます。先手が初手で強すぎる手を打つのを防ぐための仕組みです。</p>
+    <h3>終了と勝敗</h3>
+    <p>両者が手札をすべて使い切ったら終了（必ず18手で終わり、7マスは空きのまま残ります）。盤上の自分の色のマス数が多い方の勝ち。同数の場合は所有タイルの数字合計が大きい方の勝ち。それも同じなら引き分けです。</p>
+    <p>詳しいプレイ例やFAQは <a href="docs/rules.md">docs/rules.md</a>（GitHub上でも読めます）をご覧ください。</p>
+    <div style="text-align:right; margin-top:12px;">
+      <button id="rules-close" type="button">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div id="result-panel">
+  <div class="result-box">
+    <p id="result-text">-</p>
+    <button id="play-again-btn" type="button">もう一度遊ぶ</button>
+  </div>
+</div>
+
+<script src="src/core.js" data-inline-src="src/core.js"></script>
+<script src="src/ui.js" data-inline-src="src/ui.js"></script>
+</body>
+</html>
