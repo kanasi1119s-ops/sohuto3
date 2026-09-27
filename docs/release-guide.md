@@ -22,10 +22,17 @@ npm run preview   # ビルド結果をローカルで確認
 
 ## GitHub Pages で公開する場合
 
-1. リポジトリの Settings → Pages で、公開ブランチ（例: `gh-pages`）またはGitHub Actionsからのデプロイを設定する
-2. `vite.config.ts` の `base` は既に相対パス（`'./'`）に設定済みなので、サブディレクトリ配信でも追加設定は不要
-3. `npm run build` で生成された `dist/` ディレクトリの中身を公開先にアップロードする
-   - GitHub Actionsで自動化する場合は、`.github/workflows/ci.yml` のビルド成果物（`dist` アーティファクト）を利用し、`actions/deploy-pages` 等を追加する（本リポジトリでは自動デプロイは未設定）
+自動デプロイ用のワークフロー `.github/workflows/deploy-pages.yml` を設定済みです（`claude/serene-newton-5i2ypw` ブランチへのpushで自動実行）。
+`vite.config.ts` の `base` は既に相対パス（`'./'`）に設定済みなので、サブディレクトリ配信でも追加設定は不要です。
+
+**残っている作業（人間の操作が必要・1回だけ）**:
+
+1. GitHubリポジトリの **Settings → Pages** を開く
+2. **Source** を「**GitHub Actions**」に設定して保存する
+
+これだけで、以降は対象ブランチにpushするたびに自動でビルド・公開されます。
+公開後のURLは `https://<組織名>.github.io/<リポジトリ名>/` の形式になります（例: `https://kanasi1119s-ops.github.io/sohuto3/`）。
+初回は Settings で Pages を有効化した後、Actions タブから `Deploy to GitHub Pages` ワークフローを手動実行（`workflow_dispatch`）すると即座に反映されます。
 
 ## itch.io で公開する場合（HTML5ゲームとして）
 
