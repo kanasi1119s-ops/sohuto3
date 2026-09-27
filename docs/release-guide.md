@@ -18,9 +18,12 @@ npm run build
 
 ## 2. GitHub Pages で公開する場合
 
-1. リポジトリの Settings → Pages で、公開ブランチ・ディレクトリを設定する（例: `gh-pages` ブランチ、または GitHub Actions からのデプロイ）。
-2. `.github/workflows/ci.yml` はビルドとテストのみを行うワークフローです。Pages への自動デプロイを行いたい場合は、`actions/deploy-pages` 等を使った追加のワークフローを人間の判断で追加してください（本サイクルでは自動デプロイ設定は行っていません）。
-3. 公開後、モバイル・PC双方のブラウザで実際に対局が最初から最後まで遊べることを確認してください。
+自動デプロイ用ワークフロー `.github/workflows/deploy-pages.yml` を用意済みです（テスト→ビルド→Pagesへのデプロイを自動実行します）。ただし **実際に公開状態にする最初の一手は必ず人間が行ってください**。AIはこのスイッチを自分では押しません。
+
+1. **（人間が行う・1回だけ）** GitHubリポジトリの Settings → Pages を開き、「Build and deployment」の Source を **「GitHub Actions」** に設定する。
+2. このブランチ（またはmainブランチ）に変更をpushすると、`deploy-pages.yml` が自動的にテスト・ビルドを行い、GitHub Pagesへデプロイする。手動で今すぐ実行したい場合は、GitHubのActionsタブから「Deploy to GitHub Pages」ワークフローを選び「Run workflow」で手動実行することもできる。
+3. デプロイ完了後、Settings → Pages に表示されるURL（`https://<ユーザー名>.github.io/<リポジトリ名>/`）にアクセスし、モバイル・PC双方のブラウザで実際に対局が最初から最後まで遊べることを確認する。
+4. 以降はこのブランチ（設定次第ではmainブランチ）へのpushのたびに自動で最新版が再デプロイされる。公開を止めたい場合はSettings → PagesでSourceを「None」に戻す。
 
 ## 3. itch.io で公開する場合
 
