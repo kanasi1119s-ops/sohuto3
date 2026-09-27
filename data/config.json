@@ -1,0 +1,9 @@
+{
+  "boardSize": 7,
+  "startZoneSize": 3,
+  "surgeTokens": { "A": 3, "B": 3 },
+  "players": {
+    "A": { "id": "A", "name": "アンバー", "color": "#f5a623", "label": "先手" },
+    "B": { "id": "B", "name": "アジュール", "color": "#3a7bd5", "label": "後手" }
+  }
+}
