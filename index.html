@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>カラーフィールド - Color Field</title>
+<meta name="description" content="陣地を隣接拡張して最大のかたまりを競う、ブラウザで遊べる2人用アブストラクトボードゲーム">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <h1>カラーフィールド <span aria-hidden="true">🟧🟦</span></h1>
+  <p class="subtitle">陣地をつなげて、最大のかたまりを競うオリジナル対戦ゲーム</p>
+
+  <section class="panel" id="setup-panel">
+    <div class="setup-row">
+      <label>対戦モード
+        <select id="mode-select">
+          <option value="hotseat">2人対戦（同じ画面で交互に）</option>
+          <option value="vsAiRandom">VS AI（ランダム・入門向け）</option>
+          <option value="vsAiGreedy" selected>VS AI（貪欲・じっくり陣地取り）</option>
+        </select>
+      </label>
+      <label>あなたの色（VS AI時）
+        <select id="human-side-select">
+          <option value="A">アンバー（先手）</option>
+          <option value="B">アジュール（後手）</option>
+        </select>
+      </label>
+    </div>
+    <div class="actions-row" style="margin-top:10px;">
+      <button class="primary" id="new-game-btn" type="button">新しいゲームを始める</button>
+      <button id="rules-btn" type="button">あそびかた</button>
+    </div>
+  </section>
+
+  <section class="panel" id="game-panel" hidden>
+    <div class="status-bar">
+      <span class="turn-chip" id="turn-chip">
+        <span class="dot" id="turn-dot"></span>
+        <span id="turn-label">アンバーの番</span>
+      </span>
+      <div class="surge-info">
+        <span id="surge-a">サージ(先手): 3</span>
+        <span id="surge-b">サージ(後手): 3</span>
+      </div>
+    </div>
+
+    <div id="board" role="grid" aria-label="ゲーム盤"></div>
+    <p class="subtitle" style="margin:6px 0 0;">
+      緑の枠 = 通常配置できるマス／ピンクの点線枠 = サージトークンを使って配置できるマス
+    </p>
+    <div class="actions-row" style="margin-top:6px;">
+      <button id="pass-btn" type="button" disabled>パスする（打てる手が無いときだけ有効）</button>
+      <button id="rules-btn-2" type="button">あそびかた</button>
+      <button id="restart-btn" type="button">最初からやり直す</button>
+    </div>
+
+    <p class="log" id="log" aria-live="polite"></p>
+  </section>
+
+  <footer>
+    カラーフィールド (Color Field) — オリジナル制作 / MIT License &middot;
+    <a href="docs/rules.md" style="color:inherit;">ルールブック(docs/rules.md)</a>
+  </footer>
+</div>
+
+<div class="overlay" id="result-overlay" hidden>
+  <div class="modal">
+    <h2 id="result-title">ゲーム終了</h2>
+    <div class="result-scores">
+      <div class="score-card player-A">
+        <div>アンバー（先手）</div>
+        <div class="big" id="score-a">0</div>
+        <div>最大のかたまり</div>
+      </div>
+      <div class="score-card player-B">
+        <div>アジュール（後手）</div>
+        <div class="big" id="score-b">0</div>
+        <div>最大のかたまり</div>
+      </div>
+    </div>
+    <p id="result-detail"></p>
+    <div class="actions-row">
+      <button class="primary" id="play-again-btn" type="button">もう一度遊ぶ</button>
+      <button id="close-result-btn" type="button">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="rules-overlay" hidden>
+  <div class="modal" id="rules-modal-body">
+    <!-- rules-text.js から挿入される -->
+  </div>
+  <script>
+  </script>
+</div>
+
+<script src="game.js"></script>
+<script src="ai.js"></script>
+<script src="rules-text.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

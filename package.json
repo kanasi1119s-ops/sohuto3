@@ -1,0 +1,12 @@
+{
+  "name": "color-field",
+  "version": "0.1.0",
+  "private": true,
+  "description": "カラーフィールド (Color Field) - ブラウザで遊べる2人用陣地拡張アブストラクトゲーム",
+  "scripts": {
+    "test": "node tests/game.test.js",
+    "simulate": "node scripts/simulate.js",
+    "serve": "npx http-server . -p 8080"
+  },
+  "license": "MIT"
+}
