@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>ラインクラフト - Print &amp; Play</title>
+<style>
+  body { font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif; margin: 24px; color: #111; }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  h2 { font-size: 1.1rem; margin-top: 28px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  .note { color: #555; font-size: 0.85rem; }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .tile {
+    aspect-ratio: 1;
+    border: 2px solid #333;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    width: 320px;
+    margin-top: 12px;
+  }
+  .cell {
+    aspect-ratio: 1;
+    border: 2px dashed #999;
+    border-radius: 6px;
+  }
+  .rules-summary {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    background: #f7f7f5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+  }
+  @media print {
+    .no-print { display: none; }
+    body { margin: 0.5cm; }
+  }
+  .print-btn {
+    padding: 8px 16px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <button class="print-btn no-print" onclick="window.print()">印刷する / Print this page</button>
+
+  <h1>ラインクラフト（Line Craft） — Print &amp; Play キット</h1>
+  <p class="note">このページを印刷し、タイルを1枚ずつ切り分け、盤面を厚紙などに貼って物理版としてお楽しみください。プレイヤー用マーカー（碁石・色付きシール等）を各色1セット別途ご用意ください。</p>
+
+  <h2>タイル一覧（16枚：1・2・3・4を各4枚、切り取ってお使いください）</h2>
+  <div class="tiles" id="tiles"></div>
+
+  <h2>盤面（4x4マス、コピーまたは厚紙に拡大転写してお使いください）</h2>
+  <div class="board" id="board"></div>
+
+  <h2>ルール要約</h2>
+  <div class="rules-summary">ラインクラフト（Line Craft） ルール要約
+
+■ コンセプト
+場に並ぶ3枚のタイルから1枚を選び、盤上4x4マスの好きな場所に置く。
+縦・横・斜め、合計10本のラインで相手より合計値が大きいラインを多く作った方が勝ち。
+
+■ 準備
+16枚のタイルをよく混ぜ、山札にする。上から3枚を表にしてマーケットとして並べる。
+
+■ 手番（P1, P2, P2, P1 の4手を1ブロックとして繰り返す）
+1. マーケットから1枚選んで手に取る
+2. 盤面の空いているマスに置く（自分の色として記録）
+3. 山札の一番上をマーケットに補充する（山札切れなら補充なし）
+
+■ 終了・得点
+16マスが埋まったら終了（必ず16手＝各8手で終わる）。
+各ライン（4マス）で自分の置いた数字の合計が相手より大きければ1点、同点ならそのラインは無得点。
+ライン得点が多い方が勝ち。同点なら盤面全体の合計値で判定、それも同じなら引き分け。
+
+詳しいルール・プレイ例は docs/rules.md を参照してください。
+デジタル版はブラウザで `npm run dev` の後 http://localhost:5173 でも遊べます。</div>
+
+<script>
+  const tilesEl = document.getElementById('tiles');
+  const values = [1,2,3,4];
+  for (const v of values) {
+    for (let i = 0; i < 4; i++) {
+      const d = document.createElement('div');
+      d.className = 'tile';
+      d.textContent = v;
+      tilesEl.appendChild(d);
+    }
+  }
+  const boardEl = document.getElementById('board');
+  for (let i = 0; i < 16; i++) {
+    const d = document.createElement('div');
+    d.className = 'cell';
+    boardEl.appendChild(d);
+  }
+</script>
+</body>
+</html>
