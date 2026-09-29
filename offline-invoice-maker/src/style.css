@@ -1,0 +1,16 @@
+:root{--bg:#f6f7f9;--fg:#1c2330;--card:#fff;--line:#d5dae3;--acc:#1f6feb;--err:#b42318}
+@media (prefers-color-scheme:dark){:root{--bg:#141820;--fg:#e6e9ef;--card:#1d222c;--line:#343b49;--acc:#5b9dff;--err:#ff8a80}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,"Hiragino Sans","Noto Sans JP",sans-serif}
+header,main,footer{max-width:960px;margin:0 auto;padding:12px 16px}h1{font-size:1.4rem;margin:0}.sub{margin:0;opacity:.75}
+section,details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.wide{grid-column:1/-1}
+label{display:flex;flex-direction:column;font-size:.9rem;gap:2px}label.chk{flex-direction:row;align-items:center;gap:6px}
+input,textarea,select,button,.btn{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}
+button,.btn{cursor:pointer}button.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.err{color:var(--err)}
+table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid var(--line);padding:4px;text-align:left}td.num{text-align:right}
+#lines input,#lines select{width:100%;min-width:70px}ul{padding-left:0;list-style:none}li{display:flex;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)}li span{flex:1}
+.doc{background:#fff;color:#111;padding:24px;border:1px solid var(--line);border-radius:4px}.doc h2{text-align:center}.doc .big{font-size:1.2rem}.warn{color:#b42318}
+.doc .meta{text-align:right}.doc .parties{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.doc table.sum{width:60%;margin-left:auto}
+@media (max-width:600px){#lines,#lines tbody,#lines tr,#lines td{display:block}#lines thead{display:none}#lines tr{border-bottom:2px solid var(--line);padding:6px 0}.doc table.sum{width:100%}}
+@media print{body{background:#fff}.no-print{display:none!important}main{max-width:none;padding:0}section{border:0;padding:0;margin:0}.doc{border:0}}
