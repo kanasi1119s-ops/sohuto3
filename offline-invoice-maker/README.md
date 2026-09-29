@@ -17,7 +17,7 @@ npm run build      # dist/ に静的ファイルを生成（ZIPで配布可、�
 npm run preview    # ビルド結果の確認 (http://localhost:4173)
 ```
 
-> `dist/index.html` を `file://` で直接開くと Service Worker は無効ですが、アプリ本体は動作します（ES module の都合でブラウザによっては `preview` 推奨）。
+> `dist/index.html` を `file://` で直接開く使い方は**非対応**です（ブラウザの ES module 制限）。ZIP配布時は静的ホスティング、またはローカルの簡易サーバー（例: `npx serve dist`）で開いてください。
 
 ## テスト
 

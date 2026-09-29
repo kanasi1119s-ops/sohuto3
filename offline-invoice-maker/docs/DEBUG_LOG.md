@@ -14,4 +14,10 @@
 | 5 | 巨大金額・不正JSON・スマホ幅・二重保存 | 各E2E | - | 問題なし（テスト追加） | - | 成功 |
 
 ## Round 3（観点: クリーン環境・回帰）
-（下記に追記）
+| # | 問題 | 再現手順 | 重大度 | 対応 | 修正コミット | 再検証結果 |
+|---|---|---|---|---|---|---|
+| 6 | README が file:// 直開き可能と誤記（未検証・ES module制限で動かない可能性大） | README確認 | 中 | 非対応と明記、代替手順を記載 | docs: readme | - |
+| 7 | 新規clone → `npm ci` → check(13件) → build → E2E(6件) | README手順どおり | - | 問題なし | - | 全成功 |
+| 8 | 開発依存の脆弱性(vite/vitest/esbuild: High1・Critical1・Moderate3、開発サーバ限定) | `npm audit` | 高(Security) | vite8 / vitest5 へ更新 | chore: deps | audit 0件、全テスト成功 |
+
+回帰: Round1〜2の修正後にユニット13・E2E6を再実行し全成功。
