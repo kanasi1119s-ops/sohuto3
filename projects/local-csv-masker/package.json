@@ -6,7 +6,7 @@
   "description": "CSV/テキストの個人情報を端末内だけでマスキングするブラウザ完結ツール",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/postbuild.mjs",
     "preview": "vite preview --port 4173",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

@@ -1,9 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const CSV = 'name,email,tel\n山田,taro@example.com,03-1234-5678\n佐藤,,メモ\n';
 
 test('pastes CSV, masks, reports, and downloads', async ({ page }) => {
+  const consoleErrors: string[] = [];
+  page.on('console', (m) => m.type() === 'error' && consoleErrors.push(m.text()));
   const external: string[] = [];
   page.on('request', (r) => {
     if (!r.url().startsWith('http://localhost') && !r.url().startsWith('data:') && !r.url().startsWith('blob:')) external.push(r.url());
@@ -20,6 +24,7 @@ test('pastes CSV, masks, reports, and downloads', async ({ page }) => {
   expect(body.charCodeAt(0)).toBe(0xfeff);
   expect(body).toContain('山田,[EMAIL],[PHONE]');
   expect(external).toEqual([]);
+  expect(consoleErrors).toEqual([]); // CSP違反などが無いこと
 });
 
 test('column rule drop and mask', async ({ page }) => {
@@ -79,4 +84,14 @@ test('mobile width has no horizontal page scroll', async ({ page }) => {
   await page.fill('#input', CSV);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
+});
+
+test('works when dist/index.html is opened via file:// (ZIP distribution)', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(String(e)));
+  page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+  await page.goto(pathToFileURL(resolve('dist/index.html')).href);
+  await page.fill('#input', 'a,b\nx@y.com,1');
+  await expect(page.locator('#preview')).toContainText('[EMAIL]');
+  expect(errors).toEqual([]);
 });

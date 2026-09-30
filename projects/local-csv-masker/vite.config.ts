@@ -2,6 +2,6 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   base: './',
-  build: { target: 'es2022' },
+  build: { target: 'es2022', cssCodeSplit: false, rollupOptions: { output: { format: 'iife', inlineDynamicImports: true } } },
   test: { include: ['tests/unit/**/*.test.ts'] },
 });
