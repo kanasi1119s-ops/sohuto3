@@ -67,7 +67,7 @@ interface Rule {
 
 // 優先度順（重複範囲は先に定義されたものを採用）
 const RULES: Rule[] = [
-  { type: 'email', re: /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/g },
+  { type: 'email', re: /(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/g },
   { type: 'card', re: /(?<!\d)\d(?:[ -]?\d){12,18}(?!\d)/g, validate: luhn },
   { type: 'mynumber', re: /(?<!\d)\d{4}[ -]?\d{4}[ -]?\d{4}(?!\d)/g, validate: validMyNumber },
   { type: 'phone', re: /(?<![\d+])(?:\+81[- ]?|0)\d{1,4}[- ]?\d{1,4}[- ]?\d{3,4}(?!\d)/g, validate: validPhone },
@@ -80,11 +80,22 @@ const RULES: Rule[] = [
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+/** 全角英数記号・各種ハイフンを半角に寄せる（文字数は変えない＝位置が元文字列と一致する） */
+export function foldWidth(text: string): string {
+  return text.replace(/[\uFF01-\uFF5E\u2010-\u2015\u2212\u30FC\u3000]/g, (c) => {
+    const code = c.charCodeAt(0);
+    if (code >= 0xff01 && code <= 0xff5e) return String.fromCharCode(code - 0xfee0);
+    if (code === 0x3000) return ' ';
+    return '-';
+  });
+}
+
 export function findMatches(text: string, enabled: PiiType[], words: string[] = []): Match[] {
+  const folded = foldWidth(text);
   const all: Match[] = [];
   for (const rule of RULES) {
     if (!enabled.includes(rule.type)) continue;
-    for (const m of text.matchAll(rule.re)) {
+    for (const m of folded.matchAll(rule.re)) {
       if (rule.validate && !rule.validate(m[0])) continue;
       all.push({ type: rule.type, start: m.index, end: m.index + m[0].length, value: m[0] });
     }
@@ -96,10 +107,20 @@ export function findMatches(text: string, enabled: PiiType[], words: string[] = 
       all.push({ type: 'custom', start: m.index, end: m.index + m[0].length, value: m[0] });
     }
   }
-  // 先勝ち（RULES順→位置順）で重複を除去
+  // 先勝ち（RULES順→位置順）で重複を除去。占有マップで O(n)。
+  const taken = new Uint8Array(text.length);
   const accepted: Match[] = [];
   for (const m of all) {
-    if (!accepted.some((a) => m.start < a.end && a.start < m.end)) accepted.push(m);
+    let free = true;
+    for (let i = m.start; i < m.end; i++) {
+      if (taken[i]) {
+        free = false;
+        break;
+      }
+    }
+    if (!free) continue;
+    taken.fill(1, m.start, m.end);
+    accepted.push(m);
   }
   return accepted.sort((a, b) => a.start - b.start);
 }

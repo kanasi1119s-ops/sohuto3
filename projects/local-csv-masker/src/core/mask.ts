@@ -68,7 +68,8 @@ export class Masker {
 
   private replacement(type: PiiType, value: string): string {
     if (this.opts.mode === 'redact') return `[${TAGS[type]}]`;
-    if (this.opts.mode === 'pseudonym') return this.pseudonym(TAGS[type], value);
+    if (this.opts.mode === 'pseudonym')
+      return this.pseudonym(TAGS[type], type === 'email' ? value.toLowerCase() : value);
     return this.partial(type, value);
   }
 

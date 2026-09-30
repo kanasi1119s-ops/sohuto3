@@ -223,7 +223,8 @@ function init() {
   });
   $('download').addEventListener('click', () => {
     const bytes = encodeUtf8(output, $<HTMLInputElement>('bom').checked);
-    download('masked.csv', bytes, 'text/csv;charset=utf-8');
+    const asCsv = $<HTMLInputElement>('mode-csv').checked;
+    download(asCsv ? 'masked.csv' : 'masked.txt', bytes, asCsv ? 'text/csv;charset=utf-8' : 'text/plain;charset=utf-8');
   });
   $('export-profile').addEventListener('click', () => {
     download('csv-masker-profile.json', JSON.stringify(currentProfile(), null, 2), 'application/json');
