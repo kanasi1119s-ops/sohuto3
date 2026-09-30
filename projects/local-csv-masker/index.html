@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'self' data:; form-action 'none'; base-uri 'none'" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <title>Local CSV Masker</title>
+</head>
+<body>
+  <main>
+    <h1>Local CSV Masker</h1>
+    <p class="note">CSV・テキストの個人情報を、<strong>この端末の中だけ</strong>でマスキングします。データは外部に送信されません（オフラインで動作）。</p>
+
+    <section>
+      <h2>1. 入力</h2>
+      <label>CSV/TSV/テキストファイル <input id="file" type="file" accept=".csv,.tsv,.txt,text/*" /></label>
+      <label>またはここに貼り付け
+        <textarea id="input" rows="6" placeholder="name,email,tel&#10;山田,taro@example.com,03-1234-5678"></textarea>
+      </label>
+      <label class="inline"><input id="mode-csv" type="checkbox" checked /> CSVとして処理する（オフで自由テキスト）</label>
+      <label class="inline"><input id="has-header" type="checkbox" checked /> 1行目は見出し</label>
+      <p id="meta" class="note"></p>
+    </section>
+
+    <section>
+      <h2>2. 設定</h2>
+      <label>マスク方式
+        <select id="mode">
+          <option value="redact">伏字（[EMAIL] など）</option>
+          <option value="partial">部分マスク（a***@example.com など）</option>
+          <option value="pseudonym">仮名化（EMAIL_001。同じ値は同じ名前）</option>
+        </select>
+      </label>
+      <fieldset id="types"><legend>検出する種類</legend></fieldset>
+      <label>ユーザー指定語（1行に1語）<textarea id="words" rows="3"></textarea></label>
+      <div id="columns"></div>
+      <div class="row">
+        <button id="export-profile" type="button">設定を書き出す</button>
+        <label class="btn">設定を読み込む <input id="import-profile" type="file" accept=".json,application/json" hidden /></label>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 結果</h2>
+      <p id="error" role="alert" class="error"></p>
+      <p id="report" aria-live="polite"></p>
+      <div class="tablewrap"><table id="preview"></table></div>
+      <label class="inline"><input id="bom" type="checkbox" checked /> UTF-8 BOM付きで保存（Excel向け）</label>
+      <button id="download" type="button" disabled>マスク済みファイルを保存</button>
+      <p class="note">※ 検出は正規表現ベースで、氏名・住所の自動検出は行いません。氏名等の列は「列ルール」でマスク/削除してください。完全な匿名化を保証するものではありません。</p>
+    </section>
+  </main>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
