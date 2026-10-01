@@ -27,6 +27,7 @@ function playOne(diff: DifficultyId, seed: number, policy: Policy) {
 const N = 1000;
 const lines: string[] = [];
 lines.push('# シミュレーション結果', '', `試行回数: 各条件 ${N} ゲーム（シード 1〜${N} 固定）`, '');
+lines.push('戦略: **greedy**=嵐の結果を先読みする貪欲法AI／**random**=合法手（ラウンド終了を含む）から一様ランダム／**moveOnly**=greedyから錨・修理を除いた「進むだけ」（守りが不要な支配戦略でないかの確認用）。', '');
 lines.push('| 難易度 | 戦略 | 勝率 | 平均ラウンド数 | 最長ラウンド | 沈没で敗北 | 夜明けで敗北 | 平均到着数 | 未終了 |');
 lines.push('|---|---|---|---|---|---|---|---|---|');
 const usage: string[] = [];
