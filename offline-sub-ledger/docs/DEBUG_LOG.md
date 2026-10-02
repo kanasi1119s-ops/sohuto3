@@ -14,4 +14,5 @@
 ## Round 3（観点: クリーン環境・回帰）
 | # | 問題 | 再現手順 | 重大度 | 対応 | 修正コミット | 再検証結果 |
 |---|---|---|---|---|---|---|
-| (下記 Round 3 実施結果を参照) | | | | | | |
+| 1 | なし。新規cloneで `npm ci` → check(16件) → build → E2E(6件) がREADME手順どおり成功。dist/ に index/sw/manifest/icon 生成を確認。Round2修正後の回帰もなし | git clone → 上記手順 | - | - | - | OK |
+| 2 | E2Eは Playwright の Chromium が別途必要（README に CHROMIUM_PATH 記載済み。CIは playwright install を実行） | - | 低 | READMEに記載済み | - | OK |
