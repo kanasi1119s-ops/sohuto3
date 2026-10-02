@@ -1,0 +1,52 @@
+name: deploy-pages
+
+# build ジョブは常に実行（テスト＋ビルド）。
+# deploy ジョブは「Pagesの有効化」と「リポジトリ変数 ENABLE_PAGES_DEPLOY=true」を人間が設定するまでスキップされます。
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: itch.io 用 zip を作成
+        run: cd dist && zip -r ../hoshi-trick-html5.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: html5-zip
+          path: hoshi-trick-html5.zip
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.ENABLE_PAGES_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

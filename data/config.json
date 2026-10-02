@@ -1,0 +1,17 @@
+{
+  "players": 3,
+  "rounds": 5,
+  "handSize": 7,
+  "maxRank": 10,
+  "cometShift": 3,
+  "exactBase": 10,
+  "exactPerTrick": 2,
+  "missPerDiff": 2,
+  "suits": [
+    { "id": 0, "name": "星", "symbol": "★", "color": "#f5c542" },
+    { "id": 1, "name": "月", "symbol": "☾", "color": "#9ec5ff" },
+    { "id": 2, "name": "雲", "symbol": "☁", "color": "#c9d1dc" },
+    { "id": 3, "name": "花", "symbol": "✿", "color": "#ff8fb1" }
+  ],
+  "playerNames": ["あなた", "ミミ", "トト"]
+}
