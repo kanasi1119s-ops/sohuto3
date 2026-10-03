@@ -1,0 +1,222 @@
+[
+ {
+  "id": "sashimi",
+  "name": "さしみ定食",
+  "cat": "fish",
+  "cost": {
+   "fish": 3,
+   "veg": 0,
+   "rice": 0
+  },
+  "points": 3
+ },
+ {
+  "id": "yakizakana",
+  "name": "焼き魚膳",
+  "cat": "fish",
+  "cost": {
+   "fish": 3,
+   "veg": 0,
+   "rice": 1
+  },
+  "points": 5
+ },
+ {
+  "id": "kaisenjiru",
+  "name": "海鮮汁",
+  "cat": "fish",
+  "cost": {
+   "fish": 3,
+   "veg": 1,
+   "rice": 0
+  },
+  "points": 5
+ },
+ {
+  "id": "furai",
+  "name": "魚のフライ",
+  "cat": "fish",
+  "cost": {
+   "fish": 4,
+   "veg": 1,
+   "rice": 0
+  },
+  "points": 6
+ },
+ {
+  "id": "umi-oozara",
+  "name": "海の大皿",
+  "cat": "fish",
+  "cost": {
+   "fish": 4,
+   "veg": 1,
+   "rice": 1
+  },
+  "points": 8
+ },
+ {
+  "id": "kaisendon",
+  "name": "かいせん丼",
+  "cat": "fish",
+  "cost": {
+   "fish": 2,
+   "veg": 0,
+   "rice": 1
+  },
+  "points": 3
+ },
+ {
+  "id": "salad",
+  "name": "サラダ",
+  "cat": "veg",
+  "cost": {
+   "fish": 0,
+   "veg": 3,
+   "rice": 0
+  },
+  "points": 3
+ },
+ {
+  "id": "yasaiitame",
+  "name": "野菜炒め",
+  "cat": "veg",
+  "cost": {
+   "fish": 1,
+   "veg": 3,
+   "rice": 0
+  },
+  "points": 5
+ },
+ {
+  "id": "nimono",
+  "name": "煮物",
+  "cat": "veg",
+  "cost": {
+   "fish": 0,
+   "veg": 3,
+   "rice": 1
+  },
+  "points": 5
+ },
+ {
+  "id": "nukazuke",
+  "name": "ぬか漬け盛り",
+  "cat": "veg",
+  "cost": {
+   "fish": 0,
+   "veg": 4,
+   "rice": 1
+  },
+  "points": 6
+ },
+ {
+  "id": "hatake-onabe",
+  "name": "畑の大鍋",
+  "cat": "veg",
+  "cost": {
+   "fish": 1,
+   "veg": 4,
+   "rice": 1
+  },
+  "points": 8
+ },
+ {
+  "id": "koya",
+  "name": "こうやどうふ",
+  "cat": "veg",
+  "cost": {
+   "fish": 0,
+   "veg": 2,
+   "rice": 1
+  },
+  "points": 3
+ },
+ {
+  "id": "onigiri",
+  "name": "おにぎり",
+  "cat": "rice",
+  "cost": {
+   "fish": 0,
+   "veg": 0,
+   "rice": 3
+  },
+  "points": 3
+ },
+ {
+  "id": "okowa",
+  "name": "おこわ",
+  "cat": "rice",
+  "cost": {
+   "fish": 0,
+   "veg": 1,
+   "rice": 3
+  },
+  "points": 5
+ },
+ {
+  "id": "zosui",
+  "name": "雑炊",
+  "cat": "rice",
+  "cost": {
+   "fish": 1,
+   "veg": 0,
+   "rice": 3
+  },
+  "points": 5
+ },
+ {
+  "id": "chirashi",
+  "name": "ちらし",
+  "cat": "rice",
+  "cost": {
+   "fish": 1,
+   "veg": 0,
+   "rice": 4
+  },
+  "points": 6
+ },
+ {
+  "id": "juubako",
+  "name": "米の重箱",
+  "cat": "rice",
+  "cost": {
+   "fish": 1,
+   "veg": 1,
+   "rice": 4
+  },
+  "points": 8
+ },
+ {
+  "id": "inari",
+  "name": "いなり",
+  "cat": "rice",
+  "cost": {
+   "fish": 0,
+   "veg": 1,
+   "rice": 2
+  },
+  "points": 3
+ },
+ {
+  "id": "gochisou",
+  "name": "ごちそう膳",
+  "cat": "rice",
+  "cost": {
+   "fish": 2,
+   "veg": 2,
+   "rice": 2
+  },
+  "points": 9
+ },
+ {
+  "id": "banzai",
+  "name": "ばんざい皿",
+  "cat": "veg",
+  "cost": {
+   "fish": 2,
+   "veg": 2,
+   "rice": 1
+  },
+  "points": 7
+ }
+]
