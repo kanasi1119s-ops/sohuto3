@@ -180,7 +180,7 @@ export function applyAction(prev: GameState, a: Action): GameState {
         if (a.res) gain(p, a.res, 1)
         s.roosterTaker = me
         s.log.push(
-          `${name}: 一番どり${a.res ? `で${RES_LABEL[a.res]}を1つ` : ''}（次のラウンドは先手）`,
+          `${name}: 一番どり${a.res ? `で${RES_LABEL[a.res]}を1つ` : ''}${s.round < ROUNDS ? '（次のラウンドは先手）' : ''}`,
         )
         break
     }
