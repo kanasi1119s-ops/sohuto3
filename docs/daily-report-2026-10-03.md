@@ -40,7 +40,7 @@
 
 ## デプロイ設定
 - ワークフロー: `.github/workflows/deploy-pages.yml`（公開スイッチは未設定）
-- Actionsの実行結果: 開発ブランチのpushではトリガー条件（main/PR/手動）に合わないため自動実行されず、下記の確認結果を参照（確認できなかった場合は「未確認」）。ローカルで `npm test` `npm run build` の成功は確認済み。
+- Actionsの実行結果: 手動実行（workflow_dispatch、run 37084517497）で **build 成功（テスト・ビルド・zip・Pagesアーティファクト）／deploy スキップ（想定どおり）** を確認。https://github.com/kanasi1119s-ops/sohuto3/actions/runs/37084517497
 
 ## 法務チェック結果
 - 確認済み: 既存作類似、素材、賭博・景品、個人情報、表現、ストア文言
