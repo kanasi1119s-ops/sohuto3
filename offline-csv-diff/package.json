@@ -1,0 +1,20 @@
+{
+  "name": "offline-csv-diff",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node scripts/postbuild.mjs",
+    "preview": "vite preview --port 4173",
+    "test": "vitest run",
+    "e2e": "node e2e/run.mjs",
+    "check": "tsc --noEmit && vitest run"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.48.0",
+    "typescript": "^5.6.0",
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3"
+  }
+}
