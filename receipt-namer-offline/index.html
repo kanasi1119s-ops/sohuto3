@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<title>領収書ネーマー(オフライン)</title>
+</head>
+<body>
+<header>
+  <h1>領収書ネーマー</h1>
+  <p class="lead">電子取引データのファイル名を「取引日_取引先_金額_種別」に揃え、検索簿CSVとあわせてZIPで書き出します。<strong>ファイルは端末の外に送信されません</strong>(この画面は外部通信をブラウザ側で禁止しています)。</p>
+</header>
+<main>
+  <section id="drop" class="drop" tabindex="0">
+    <label>PDF・画像をここにドロップ、またはクリックして選択
+      <input id="file" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.heic,.tif,.tiff,.webp,.csv,.xml,.xlsx" />
+    </label>
+  </section>
+  <p id="msg" role="status"></p>
+  <div class="actions">
+    <button id="export" type="button">ZIPで書き出し</button>
+    <label class="btn">バックアップZIPを読み込み<input id="import" type="file" accept=".zip" hidden /></label>
+    <button id="clear" type="button" class="danger">すべて削除</button>
+  </div>
+  <ul id="list"></ul>
+</main>
+<footer>
+  <p>保存先: このブラウザの IndexedDB のみ。ブラウザのデータ消去で失われるため、定期的にZIPで書き出してください。法令対応(電子帳簿保存法の要件充足)を保証するものではありません。</p>
+</footer>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
