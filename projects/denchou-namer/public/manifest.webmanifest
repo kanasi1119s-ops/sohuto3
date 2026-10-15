@@ -1,0 +1,1 @@
+{ "name": "電帳ネーマー", "short_name": "電帳ネーマー", "start_url": "./", "display": "standalone", "background_color": "#f7f8fa", "theme_color": "#1f5fd1", "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }] }

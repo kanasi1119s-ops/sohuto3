@@ -1,0 +1,22 @@
+:root { --bg:#f7f8fa; --fg:#1d2330; --muted:#5b6475; --card:#fff; --line:#d9dde5; --accent:#1f5fd1; --bad:#b3261e; --ok:#1b7a3d; }
+@media (prefers-color-scheme: dark) { :root { --bg:#14171d; --fg:#e8ebf1; --muted:#9aa3b5; --card:#1d222b; --line:#343b49; --accent:#6ea0ff; --bad:#ff8a80; --ok:#6fd48f; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+header, main, footer { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+h1 { margin: 24px 0 4px; font-size: 1.5rem; }
+.lead { color: var(--muted); margin-top: 0; }
+.drop { border:2px dashed var(--line); border-radius:12px; background:var(--card); padding:28px 16px; text-align:center; margin:16px 0; }
+.drop.over { border-color: var(--accent); }
+.btn { display:inline-block; background:var(--accent); color:#fff; border:0; border-radius:8px; padding:8px 16px; font:inherit; cursor:pointer; }
+.btn.sub { background:transparent; color:var(--accent); border:1px solid var(--accent); }
+.btn:disabled { opacity:.5; cursor:not-allowed; }
+.bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:12px 0; }
+.tablewrap { overflow-x:auto; background:var(--card); border:1px solid var(--line); border-radius:8px; }
+table { border-collapse:collapse; width:100%; min-width:860px; }
+th, td { padding:6px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:.9rem; }
+td input { width:100%; min-width:90px; font:inherit; padding:4px 6px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); }
+td.err { color:var(--bad); font-size:.8rem; }
+td.name { word-break:break-all; color:var(--ok); }
+input { font:inherit; padding:4px 8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--fg); }
+.dict { margin:24px 0; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:8px 16px; }
+footer { color:var(--muted); font-size:.8rem; padding-bottom:32px; }

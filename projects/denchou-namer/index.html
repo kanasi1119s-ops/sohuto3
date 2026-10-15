@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <title>電帳ネーマー</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <header>
+    <h1>電帳ネーマー</h1>
+    <p class="lead">受け取った請求書・領収書のファイルに「取引年月日_取引先_金額」の名前を付け、索引台帳CSVと一緒にZIPにまとめます。<strong>ファイルは端末の外に送信されません。</strong></p>
+  </header>
+  <main>
+    <section id="drop" class="drop" tabindex="0" aria-label="ファイルをここにドロップ">
+      <p>ここにファイルをドロップ、または</p>
+      <label class="btn">ファイルを選択<input id="file" type="file" multiple hidden /></label>
+    </section>
+
+    <section id="listSec" hidden>
+      <div class="bar">
+        <label>書類種別を一括設定
+          <input id="bulkKind" list="kinds" placeholder="例: 請求書" />
+          <datalist id="kinds"><option value="請求書"><option value="領収書"><option value="見積書"><option value="納品書"></datalist>
+        </label>
+        <button id="applyKind" class="btn sub" type="button">全行に適用</button>
+        <button id="clear" class="btn sub" type="button">全てクリア</button>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>元ファイル名</th><th>取引年月日</th><th>取引先</th><th>金額(円)</th><th>種別</th><th>新しいファイル名</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p id="summary" role="status"></p>
+      <div class="bar">
+        <button id="zip" class="btn" type="button">ZIPで保存(リネーム済み＋台帳)</button>
+        <button id="csv" class="btn sub" type="button">台帳CSVのみ保存</button>
+      </div>
+    </section>
+
+    <details class="dict">
+      <summary>取引先の表記ゆれ辞書(端末内に保存)</summary>
+      <p>別名 → 正規の取引先名 を登録すると、入力した取引先名が自動で統一されます。</p>
+      <div class="bar">
+        <input id="alias" placeholder="別名 例: (株)サンプル" />
+        <input id="canon" placeholder="正規名 例: 株式会社サンプル" />
+        <button id="addDict" class="btn sub" type="button">追加</button>
+      </div>
+      <ul id="dictList"></ul>
+      <div class="bar">
+        <button id="dictExport" class="btn sub" type="button">辞書をCSV保存</button>
+        <label class="btn sub">辞書CSVを読込<input id="dictImport" type="file" accept=".csv,text/csv" hidden /></label>
+      </div>
+    </details>
+  </main>
+  <footer>
+    <p>本ツールは電子帳簿保存法の要件充足を保証するものではありません。実際の運用は税理士・税務署等にご確認ください。通信は行わず、辞書以外のデータは保存しません。</p>
+  </footer>
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
