@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
 
 const pdf = (name: string, body = '%PDF-1.4 test') => ({ name, mimeType: 'application/pdf', buffer: Buffer.from(body) });
 
@@ -98,4 +100,14 @@ test('IME変換中に入力欄が再生成されない(日本語入力の保護)
   await cdp.send('Input.imeSetComposition', { text: '株', selectionStart: 1, selectionEnd: 1 });
   expect(await input.evaluate((el) => (el as HTMLInputElement & { __m?: number }).__m)).toBe(1);
   await expect(input).toBeFocused();
+});
+
+test('ビルド成果物を file:// で直接開いても動作する(ZIP展開配布)', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(String(e)));
+  page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+  await page.goto(pathToFileURL(resolve('dist/index.html')).href);
+  await page.setInputFiles('#file', [pdf('請求書_サンプル_2026-10-15_1,000円.pdf')]);
+  await expect(page.locator('#rows tr').first().locator('td.name')).toHaveText('20261015_サンプル_1000円.pdf');
+  expect(errors).toEqual([]);
 });

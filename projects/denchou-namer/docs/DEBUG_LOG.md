@@ -18,4 +18,9 @@
 - 確認済み(問題なし): オフライン再読込後の動作(E2E)、スマホ幅375pxでページ横スクロール無し(表は枠内スクロール)、外部通信ゼロ(E2E)、辞書のリロード後保持、CSV数式インジェクション対策、`__proto__` 辞書キー拒否
 
 ## Round 3(観点: クリーン環境・回帰)
-(下記「Round 3 実施記録」を参照)
+| # | 問題 | 再現手順 | 重大度 | 対応 | 修正コミット | 再検証結果 |
+|---|---|---|---|---|---|---|
+| 8 | **ビルド成果物を `file://` で開くとCORSでJSが読めず無反応**(ZIP展開配布が成立しない。READMEの記述も誤り) | `dist/index.html` を file:// で開く(E2E追加、修正前は失敗) | 高 | JSを classic script(IIFE, defer)で出力、CSSは `public/style.css` を直接リンクに変更 | 本ラウンド | E2E 8件通過 |
+- クリーン環境: 新規 clone → `npm ci` → `npm run check` → `npm run build` → `npm run test:e2e` を README の手順どおり実行し、すべて成功(Chromium は事前導入済みのものを `CHROMIUM_PATH` で指定)
+- 回帰: Round 1〜2 の全テスト(ユニット47 + E2E 8)が修正後も通過
+- 持ち越し(低): 実ブラウザ(Windows/macOS の Chrome/Edge/Safari/Firefox)での手動確認は未実施 → 公開前に人間が確認(Issue起票はリポジトリ未作成のためREPORTに記載)

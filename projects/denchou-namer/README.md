@@ -26,7 +26,7 @@ npm run test:e2e   # Playwright E2E(初回は `npx playwright install chromium` 
 ```
 Chromium を別途用意している場合は `CHROMIUM_PATH=/path/to/chrome npm run test:e2e`。
 
-`dist/` を任意の静的ホスティングに置くか、ZIPで配布すれば動作します(`file://` 直開きではPWA機能は無効、本体機能は動作)。
+`dist/` を任意の静的ホスティングに置くか、ZIPに固めて配布し、展開した `index.html` をブラウザで直接開いても動作します(E2Eで検証済み)。ただしオフライン用の Service Worker は http(s) 配信時のみ有効です(`file://` では不要・無効)。
 
 ## データの保存場所
 - 取引先辞書: ブラウザの localStorage(キー `dict`)。端末外には出ません
