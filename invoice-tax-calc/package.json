@@ -1,0 +1,1 @@
+{"name":"invoice-tax-calc","version":"0.1.0","description":"Offline CLI: per-tax-rate invoice tax totals (Japan qualified invoice rounding)","type":"module","bin":{"invoice-tax-calc":"src/cli.js"},"scripts":{"test":"node --test test/*.test.js","check":"node --check src/cli.js && node --check src/calc.js && npm test"},"license":"UNLICENSED","private":true}
