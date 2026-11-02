@@ -1,0 +1,30 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>インボイス計算機（オフライン）</title>
+<style>body{font-family:sans-serif;max-width:760px;margin:1rem auto;padding:0 1rem}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #ccc;padding:4px}input,select{width:100%;box-sizing:border-box}.r{text-align:right}</style></head><body>
+<h1>インボイス計算機</h1><p>データはこの端末のブラウザ内にのみ保存され、外部へ送信されません。</p>
+<table id="t"><thead><tr><th>品目</th><th>単価(税抜)</th><th>数量</th><th>税率</th><th></th></tr></thead><tbody></tbody></table>
+<p><button id="add">行を追加</button> 端数処理 <select id="rd"><option value="floor">切捨て</option><option value="round">四捨五入</option><option value="ceil">切上げ</option></select>
+<label><input type="checkbox" id="wh" style="width:auto"> 源泉徴収あり</label></p>
+<pre id="out"></pre>
+<p><button id="exp">CSV保存</button> <input type="file" id="imp" accept=".csv" style="width:auto"></p>
+<script>
+/*CORE*/
+const KEY='invoice-calc-jp:v1';
+let items=[];try{items=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){}
+if(!items.length)items=[{name:'',unitPrice:0,qty:1,rate:10}];
+const tb=document.querySelector('#t tbody');
+function save(){try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){}}
+function render(){tb.innerHTML='';items.forEach((it,i)=>{const tr=document.createElement('tr');
+ const mk=(k,type)=>{const td=document.createElement('td');const inp=document.createElement('input');inp.type=type;inp.value=it[k];
+  inp.oninput=()=>{it[k]=type==='number'?Math.trunc(Number(inp.value)||0):inp.value;save();calc()};td.append(inp);return td};
+ tr.append(mk('name','text'),mk('unitPrice','number'),mk('qty','number'));
+ const td=document.createElement('td');const s=document.createElement('select');
+ [10,8,0].forEach(r=>{const o=new Option(r+'%',r);o.selected=r===it.rate;s.add(o)});s.onchange=()=>{it.rate=Number(s.value);save();calc()};td.append(s);tr.append(td);
+ const d=document.createElement('td');const b=document.createElement('button');b.textContent='削除';b.onclick=()=>{items.splice(i,1);save();render()};d.append(b);tr.append(d);tb.append(tr)});calc()}
+function calc(){const o=document.getElementById('out');try{const r=calcInvoice(items,{rounding:rd.value,withholding:wh.checked});
+ o.textContent=r.byRate.map(g=>`${g.rate}%対象 ${g.subtotal.toLocaleString()}円 消費税 ${g.tax.toLocaleString()}円`).join('\n')+`\n合計 ${r.total.toLocaleString()}円`+(wh.checked?`\n源泉徴収 -${r.withholding.toLocaleString()}円\n支払額 ${r.payable.toLocaleString()}円`:'')}catch(e){o.textContent='入力エラー: '+e.message}}
+add.onclick=()=>{items.push({name:'',unitPrice:0,qty:1,rate:10});save();render()};rd.onchange=wh.onchange=calc;
+exp.onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+itemsToCsv(items)],{type:'text/csv'}));a.download='items.csv';a.click()};
+imp.onchange=async()=>{try{items=csvToItems(await imp.files[0].text());save();render()}catch(e){alert('読込失敗: '+e.message)}};
+render();
+</script></body></html>

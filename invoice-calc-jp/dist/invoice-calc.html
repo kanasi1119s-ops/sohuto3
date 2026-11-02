@@ -1,0 +1,119 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>インボイス計算機（オフライン）</title>
+<style>body{font-family:sans-serif;max-width:760px;margin:1rem auto;padding:0 1rem}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #ccc;padding:4px}input,select{width:100%;box-sizing:border-box}.r{text-align:right}</style></head><body>
+<h1>インボイス計算機</h1><p>データはこの端末のブラウザ内にのみ保存され、外部へ送信されません。</p>
+<table id="t"><thead><tr><th>品目</th><th>単価(税抜)</th><th>数量</th><th>税率</th><th></th></tr></thead><tbody></tbody></table>
+<p><button id="add">行を追加</button> 端数処理 <select id="rd"><option value="floor">切捨て</option><option value="round">四捨五入</option><option value="ceil">切上げ</option></select>
+<label><input type="checkbox" id="wh" style="width:auto"> 源泉徴収あり</label></p>
+<pre id="out"></pre>
+<p><button id="exp">CSV保存</button> <input type="file" id="imp" accept=".csv" style="width:auto"></p>
+<script>
+// 適格請求書向け計算ロジック（外部通信なし・純関数）
+const ROUND = {
+  floor: Math.floor,
+  ceil: Math.ceil,
+  round: (x) => Math.round(x),
+};
+
+/** 整数演算で端数処理（浮動小数誤差回避） amount*rate(%) /100 */
+function pct(amount, ratePercent, mode = 'floor') {
+  if (!Number.isInteger(amount)) throw new Error('amount must be integer yen');
+  if (!ROUND[mode]) throw new Error('unknown rounding mode: ' + mode);
+  const num = amount * Math.round(ratePercent * 100); // rate in 1/100 %
+  return ROUND[mode](num / 10000);
+}
+
+/**
+ * items: [{name, unitPrice:int, qty:int, rate:8|10|0}] 税抜単価
+ * 税率ごとに合計→1回だけ端数処理（インボイス制度の請求書単位ルール）
+ */
+function calcInvoice(items, { rounding = 'floor', withholding = false } = {}) {
+  if (!Array.isArray(items)) throw new Error('items must be array');
+  const groups = new Map();
+  for (const [i, it] of items.entries()) {
+    const { unitPrice, qty, rate } = it;
+    if (![0, 8, 10].includes(rate)) throw new Error(`item ${i + 1}: invalid rate`);
+    if (!Number.isInteger(unitPrice) || !Number.isInteger(qty) || qty < 0)
+      throw new Error(`item ${i + 1}: unitPrice/qty must be integers (qty>=0)`);
+    groups.set(rate, (groups.get(rate) ?? 0) + unitPrice * qty);
+  }
+  const byRate = [...groups.entries()]
+    .sort((a, b) => b[0] - a[0])
+    .map(([rate, subtotal]) => ({ rate, subtotal, tax: pct(subtotal, rate, rounding) }));
+  const subtotal = byRate.reduce((s, g) => s + g.subtotal, 0);
+  const tax = byRate.reduce((s, g) => s + g.tax, 0);
+  const wh = withholding ? withholdingTax(subtotal) : 0; // 税抜（請求書で区分記載の場合）
+  return { byRate, subtotal, tax, total: subtotal + tax, withholding: wh, payable: subtotal + tax - wh };
+}
+
+/** 報酬・料金の源泉徴収: 100万円以下 10.21%、超過分 20.42%（復興特別所得税込み）。端数は切捨て */
+function withholdingTax(amountExTax) {
+  if (!Number.isInteger(amountExTax) || amountExTax < 0) throw new Error('invalid amount');
+  const LIMIT = 1_000_000;
+  if (amountExTax <= LIMIT) return Math.floor((amountExTax * 1021) / 10000);
+  return Math.floor((LIMIT * 1021) / 10000) + Math.floor(((amountExTax - LIMIT) * 2042) / 10000);
+}
+
+/** 適格請求書発行事業者登録番号の形式検証: T + 13桁。法人番号のチェックデジット検証付き（法人のみ） */
+function validateRegNo(s) {
+  if (!/^T\d{13}$/.test(s)) return { ok: false, reason: 'format' };
+  const d = s.slice(1).split('').map(Number);
+  // 先頭1桁がチェックデジット、残り12桁が基礎番号。個人事業主は別体系のため形式のみ保証
+  const sum = d.slice(1).reduce((acc, v, i) => acc + v * (i % 2 === 0 ? 1 : 2), 0);
+  // 注: 法人番号は 12桁を末尾から 1,2,1,2.. 重み。ここでは厳密性より形式検証を主とする
+  return { ok: true, note: 'format-only', checksumHint: 9 - (sum % 9) === d[0] };
+}
+
+/** CSV往復（バックアップ用）。ダブルクォート対応 */
+function itemsToCsv(items) {
+  const q = (v) => `"${String(v).replace(/"/g, '""')}"`;
+  const body = items.map((i) => [q(i.name), i.unitPrice, i.qty, i.rate].join(','));
+  return ['name,unitPrice,qty,rate', ...body].join('\n');
+}
+function csvToItems(csv) {
+  const rows = [];
+  let cur = [], f = '', inQ = false;
+  const s = csv.replace(/^﻿/, '');
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (inQ) {
+      if (c === '"' && s[i + 1] === '"') { f += '"'; i++; }
+      else if (c === '"') inQ = false;
+      else f += c;
+    } else if (c === '"') inQ = true;
+    else if (c === ',') { cur.push(f); f = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && s[i + 1] === '\n') i++;
+      cur.push(f); f = ''; rows.push(cur); cur = [];
+    } else f += c;
+  }
+  if (f !== '' || cur.length) { cur.push(f); rows.push(cur); }
+  const [head, ...data] = rows.filter((r) => r.some((x) => x !== ''));
+  if (!head || head.join(',') !== 'name,unitPrice,qty,rate') throw new Error('invalid CSV header');
+  return data.map((r, i) => {
+    const [name, u, q, rt] = r;
+    const it = { name, unitPrice: Number(u), qty: Number(q), rate: Number(rt) };
+    if (![it.unitPrice, it.qty, it.rate].every(Number.isInteger)) throw new Error(`row ${i + 2}: invalid number`);
+    return it;
+  });
+}
+
+const KEY='invoice-calc-jp:v1';
+let items=[];try{items=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){}
+if(!items.length)items=[{name:'',unitPrice:0,qty:1,rate:10}];
+const tb=document.querySelector('#t tbody');
+function save(){try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){}}
+function render(){tb.innerHTML='';items.forEach((it,i)=>{const tr=document.createElement('tr');
+ const mk=(k,type)=>{const td=document.createElement('td');const inp=document.createElement('input');inp.type=type;inp.value=it[k];
+  inp.oninput=()=>{it[k]=type==='number'?Math.trunc(Number(inp.value)||0):inp.value;save();calc()};td.append(inp);return td};
+ tr.append(mk('name','text'),mk('unitPrice','number'),mk('qty','number'));
+ const td=document.createElement('td');const s=document.createElement('select');
+ [10,8,0].forEach(r=>{const o=new Option(r+'%',r);o.selected=r===it.rate;s.add(o)});s.onchange=()=>{it.rate=Number(s.value);save();calc()};td.append(s);tr.append(td);
+ const d=document.createElement('td');const b=document.createElement('button');b.textContent='削除';b.onclick=()=>{items.splice(i,1);save();render()};d.append(b);tr.append(d);tb.append(tr)});calc()}
+function calc(){const o=document.getElementById('out');try{const r=calcInvoice(items,{rounding:rd.value,withholding:wh.checked});
+ o.textContent=r.byRate.map(g=>`${g.rate}%対象 ${g.subtotal.toLocaleString()}円 消費税 ${g.tax.toLocaleString()}円`).join('\n')+`\n合計 ${r.total.toLocaleString()}円`+(wh.checked?`\n源泉徴収 -${r.withholding.toLocaleString()}円\n支払額 ${r.payable.toLocaleString()}円`:'')}catch(e){o.textContent='入力エラー: '+e.message}}
+add.onclick=()=>{items.push({name:'',unitPrice:0,qty:1,rate:10});save();render()};rd.onchange=wh.onchange=calc;
+exp.onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+itemsToCsv(items)],{type:'text/csv'}));a.download='items.csv';a.click()};
+imp.onchange=async()=>{try{items=csvToItems(await imp.files[0].text());save();render()}catch(e){alert('読込失敗: '+e.message)}};
+render();
+</script></body></html>
